@@ -14,12 +14,12 @@ function Home2() {
             </h1>
             <p className="home-about-body">
               My name is Mason Victoria and I am a Toronto-based composer and sound designer for video games, film and television. 
-			  I also compose and arrange small and large ensemble music for live performance. Currently, I am an Technical Game Sound 
-			  Designer at Warner Brothers Post-Production Creative Services. 
+			        I also compose and arrange small and large ensemble music for live performance. Currently, I am an Technical Game Sound 
+			        Designer at Warner Brothers Post-Production Creative Services. 
               <br />
               <br />
               This website outlines some of my freelance work and ongoing projects as well as houses my reels. 
-			  Feel free to contact me through the 'ABOUT' page if you'd like to get in touch!
+			        Feel free to contact me through the 'ABOUT' page if you'd like to get in touch!
             </p>
           </Col>
           <Col md={4} className="myAvtar">
