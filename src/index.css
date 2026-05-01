@@ -1,0 +1,22 @@
+/* Import BOTH fonts */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Shippori+Antique&display=swap");
+
+/* Body = Atkinson */
+body {
+  margin: 0;
+  font-family: "Atkinson Hyperlegible", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: linear-gradient(to left, rgb(27 20 41), rgb(20 15 35));
+}
+
+/* Headers = Shippori */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Shippori Antique", serif !important;
+  
+  .main-name {
+  font-family: "Shippori Antique", serif !important;
+  color: rgb(255,255,255);
+  font-size: 56px;
+}
+}
