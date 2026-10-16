@@ -3,233 +3,319 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mason Victoria — Sound design, composition, implementation</title>
+<title>Mason Victoria Sound | Game Audio and Implementation</title>
 <meta name="description" content="Mason Victoria is a composer and audio designer for video games, film, television and live ensemble based in Toronto, Canada.">
+<meta property="og:title" content="Mason Victoria Sound | Game Audio, Sound Design, Composition">
+<meta property="og:description" content="Mason Victoria is a composer and sound designer for video games, film, television and live ensemble.">
+<meta property="og:image" content="images/control-lab.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #ffffff;
-    --tile: #f1f1f0;
-    --ink: #1e1e1e;
-    --muted: #6f6f6f;
-    --rule: #e2e2e0;
-    --measure: 920px;
+    --navy: #2d3b55;
+    --rule: #b9c1cc;
+    --sky: #86c0e8;
+    --black: #000;
+    --white: #fff;
+    --content: 1180px;
+    --font: "Nunito Sans", "Avenir Next", "Avenir", system-ui, sans-serif;
   }
 
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: "Instrument Sans", system-ui, sans-serif;
-    font-size: 17px;
-    line-height: 1.6;
-    color: var(--ink);
-    background: var(--bg);
-    -webkit-font-smoothing: antialiased;
-  }
+  body { margin: 0; font-family: var(--font); color: var(--navy); background: var(--white); -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
-  a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; }
   img { display: block; max-width: 100%; }
-  h1, h2 { margin: 0; font-weight: 500; line-height: 1.15; letter-spacing: -0.015em; }
-  p { margin: 0; }
+  h1, h2, h3, p { margin: 0; }
+  .wrap { width: min(var(--content), 100% - 3rem); margin-inline: auto; }
 
-  .wrap { width: min(var(--measure), 100% - 3rem); margin-inline: auto; }
+  /* ---------- header ---------- */
+  .site-header { padding: 22px 0 0; background: var(--white); }
+  .site-header .brand { font-size: 36px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; line-height: 1; }
+  .site-header .tagline { margin-top: 8px; font-size: 20px; font-weight: 400; letter-spacing: .02em; }
+  .site-header .tagline span { margin: 0 .35em; }
 
-  /* header */
-  header .wrap {
-    display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .5rem 2rem;
-    padding: 1.75rem 0;
+  .nav { margin-top: 18px; }
+  .nav ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .nav li { border-top: 2px solid var(--rule); text-align: center; padding: 10px 0 14px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
+  .nav li.active { border-top-color: var(--navy); }
+  .nav a, .nav summary { display: block; cursor: pointer; }
+  .nav summary { list-style: none; }
+  .nav summary::-webkit-details-marker { display: none; }
+  .nav details { position: relative; }
+  .nav details ul {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%); z-index: 20;
+    display: block; min-width: 200px; background: var(--white); border: 1px solid var(--rule); padding: 6px 0;
   }
-  .brand { font-weight: 600; }
-  nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.5rem; color: var(--muted); }
-  nav a:hover { color: var(--ink); }
+  .nav details ul li { border: 0; padding: 0; text-transform: none; letter-spacing: 0; font-size: 15px; text-align: left; }
+  .nav details ul a { padding: 9px 18px; }
+  .nav details ul a:hover { background: #eef2f6; }
 
-  /* hero */
-  .hero { padding: clamp(3rem, 10vw, 7rem) 0 clamp(2.5rem, 6vw, 4rem); }
-  .hero h1 { font-size: clamp(2rem, 5vw, 3.25rem); max-width: 22ch; }
-  .hero h1 em { font-style: normal; color: var(--muted); }
-  .hero p { margin-top: 1.5rem; max-width: 58ch; font-size: 1.15rem; }
-  .hero p + p { margin-top: 1rem; }
+  /* ---------- reels (black) ---------- */
+  .reels { background: var(--black); color: var(--white); padding: 40px 0 55px; }
+  .video { aspect-ratio: 16 / 9; background: #0e0e0e; }
+  .video iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .video.placeholder { display: grid; place-items: center; color: #8a8a8a; font-size: 15px; text-align: center; padding: 1rem; }
+  .btn {
+    display: inline-block; padding: 12px 30px; border: 1px solid var(--sky); border-radius: 10px;
+    color: var(--white); font-size: 19px; font-weight: 400; background: transparent; transition: background .15s, color .15s;
+  }
+  .btn:hover { background: var(--sky); color: var(--black); }
+  .btn-row { text-align: center; margin: 38px 0 42px; }
+  .reel-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .reel-pair .btn-row { margin: 38px 0 0; }
 
-  .reels { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: .75rem 2rem; }
-  .reels a { font-weight: 500; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
-  .reels a:hover { color: var(--muted); border-color: var(--muted); }
+  /* ---------- hello (photo + overlay) ---------- */
+  .hello {
+    position: relative; min-height: 940px; color: var(--white);
+    background: #111 url("images/control-lab.jpg") center / cover no-repeat;
+    display: grid; grid-template-columns: 1fr 1fr;
+  }
+  .hello::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+  .hello .panel {
+    grid-column: 2; position: relative; background: rgba(0,0,0,.6);
+    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+    padding: 70px 10% 70px;
+  }
+  .hello h2 { font-size: 36px; font-weight: 600; letter-spacing: .04em; margin-bottom: 36px; }
+  .hello p { font-size: 17px; line-height: 1.7; margin-bottom: 36px; max-width: 54ch; }
+  .hello h3 { font-size: 30px; font-weight: 600; letter-spacing: .04em; margin: 8px 0 44px; }
+  .hello .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 28px; width: 100%; max-width: 580px; }
+  .hello .btn { width: 100%; text-align: center; }
 
-  .hero-photo img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; margin-top: clamp(2.5rem, 6vw, 4rem); }
+  /* ---------- projects ---------- */
+  .projects { padding: 48px 0 70px; text-align: center; }
+  .projects h2 { font-size: 36px; font-weight: 600; letter-spacing: .04em; }
+  .projects .sub { font-style: italic; font-size: 20px; margin: 14px 0 40px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 36px; text-align: left; }
+  .tile {
+    position: relative; aspect-ratio: 1; overflow: hidden; background: #1f2630; color: var(--white);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 36px 36px 38px;
+  }
+  .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+  .tile::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(0,0,0,.45) 0%, rgba(0,0,0,.65) 100%); transition: background .2s; }
+  .tile:hover::before { background: linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.5) 100%); }
+  .tile .title, .tile .role { position: relative; z-index: 2; }
+  .tile .title { font-size: 36px; font-weight: 800; line-height: 1.1; margin-bottom: 10px; }
+  .tile .role { font-size: 15px; line-height: 1.35; white-space: pre-line; }
 
-  /* projects */
-  .work { padding: clamp(3rem, 8vw, 6rem) 0; }
-  .work h2 { font-size: 1.1rem; font-weight: 500; color: var(--muted); margin-bottom: 1.75rem; }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 2rem 1.5rem; }
-  .tile { display: block; }
-  .tile .img { aspect-ratio: 1; background: var(--tile); overflow: hidden; }
-  .tile .img img { width: 100%; height: 100%; object-fit: cover; }
-  .tile .img.blank { display: flex; align-items: flex-end; padding: 1rem; font-weight: 500; line-height: 1.25; color: var(--muted); }
-  .tile .title { margin-top: .75rem; font-weight: 500; }
-  .tile .role { color: var(--muted); font-size: .95rem; line-height: 1.4; }
-  .tile:hover .title { text-decoration: underline; text-underline-offset: 3px; }
-
-  /* footer */
-  footer { border-top: 1px solid var(--rule); }
-  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 2rem; padding: 2rem 0 3rem; color: var(--muted); }
-  footer a:hover { color: var(--ink); }
+  /* ---------- responsive ---------- */
+  @media (max-width: 960px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .hello { grid-template-columns: 1fr; min-height: 0; }
+    .hello .panel { grid-column: 1; }
+  }
+  @media (max-width: 640px) {
+    .site-header .brand { font-size: 26px; letter-spacing: .16em; }
+    .site-header .tagline { font-size: 16px; }
+    .nav ul { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .reel-pair { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; }
+    .tile .title { font-size: 30px; }
+    .hello .btn-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<header>
+<header class="site-header">
   <div class="wrap">
-    <a class="brand" href="index.html">Mason Victoria</a>
-    <nav aria-label="Main">
+    <h1 class="brand">Mason Victoria</h1>
+    <p class="tagline">sound design<span>|</span>composition<span>|</span>implementation</p>
+    <nav class="nav" aria-label="Main">
       <ul>
-        <li><a href="#work">Work</a></li>
-        <li><a href="compositionportfolio.html">Composition</a></li>
-        <li><a href="sounddesignportfolio.html">Sound design</a></li>
-        <li><a href="programming.html">Implementation</a></li>
-        <li><a href="chartingportfolio.html">Charting</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li class="active"><a href="index.html">Home</a></li>
+        <li>
+          <details>
+            <summary>Reels</summary>
+            <ul>
+              <li><a href="compositionportfolio.html">composition</a></li>
+              <li><a href="sounddesignportfolio.html">sound design</a></li>
+              <li><a href="programming.html">programming</a></li>
+              <li><a href="chartingportfolio.html">charting</a></li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details>
+            <summary>Projects</summary>
+            <ul>
+              <li><a href="wartorn.html">Wartorn</a></li>
+              <li><a href="borf-clorgman.html">Borf Clorgman</a></li>
+              <li><a href="ssjo.html">SSJO</a></li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details>
+            <summary>About</summary>
+            <ul>
+              <li><a href="about.html">extended bio</a></li>
+              <li><a href="contact.html">contact</a></li>
+            </ul>
+          </details>
+        </li>
       </ul>
     </nav>
   </div>
 </header>
 
 <main>
-  <section class="hero wrap">
-    <h1>Sound design, composition and implementation for games, film and live ensemble. <em>Based in Toronto.</em></h1>
-    <p>I'm Mason Victoria, a composer and sound designer for video games, film and television. I also compose and arrange small and large ensemble music for live performance. Currently, I'm a Technical Game Sound Designer at Warner Brothers Post-Production Creative Services.</p>
-    <p>This site collects my freelance work, ongoing projects and reels. If you'd like to get in touch, the contact page is the quickest route.</p>
+  <!-- Reels -->
+  <section class="reels">
+    <div class="wrap">
+      <!-- SOUND DESIGN REEL: replace 739765376 with the numeric id from the Vimeo URL -->
+      <div class="video">
+        <iframe src="https://player.vimeo.com/video/739765376?title=0&byline=0&portrait=0" title="Sound design reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="btn-row"><a class="btn" href="sounddesignportfolio.html">sound design portfolio</a></div>
 
-    <div class="reels">
-      <a href="sounddesignportfolio.html">Sound design reel</a>
-      <a href="compositionportfolio.html">Composition reel</a>
-      <a href="programming.html">Implementation reel</a>
-      <a href="chartingportfolio.html">Charting reel</a>
-    </div>
-
-    <div class="hero-photo">
-      <img src="images/control-lab.jpg" alt="Mason at a mixing console in a control room" width="1960" height="1102">
+      <div class="reel-pair">
+        <div>
+          <!-- COMPOSITION REEL -->
+          <div class="video">
+            <iframe src="https://player.vimeo.com/video/729712497?title=0&byline=0&portrait=0" title="Composition reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="btn-row"><a class="btn" href="compositionportfolio.html">composition portfolio</a></div>
+        </div>
+        <div>
+          <!-- TECHNICAL AUDIO REEL -->
+          <div class="video">
+            <iframe src="https://player.vimeo.com/video/731488316?title=0&byline=0&portrait=0" title="Technical audio reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="btn-row"><a class="btn" href="programming.html">implementation portfolio</a></div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="work wrap" id="work">
-    <h2>Selected work</h2>
-    <div class="grid">
+  <!-- Hello -->
+  <section class="hello">
+    <div class="panel">
+      <h2>hello!</h2>
+      <p>My name is Mason Victoria and I am a Toronto-based composer and sound designer for video games, film and television. I also compose and arrange small and large ensemble music for live performance. Currently, I am a Technical Game Sound Designer at Warner Brothers Post-Production Creative Services.</p>
+      <p>This website outlines some of my freelance work and ongoing projects as well as houses my reels. Feel free to contact me through the 'ABOUT' page if you'd like to get in touch!</p>
+      <h3>additional reels</h3>
+      <div class="btn-grid">
+        <a class="btn" href="compositionportfolio.html">composition</a>
+        <a class="btn" href="programming.html">implementation</a>
+        <a class="btn" href="chartingportfolio.html">charting</a>
+        <a class="btn" href="contact.html">contact</a>
+      </div>
+    </div>
+  </section>
 
-      <a class="tile" href="#">
-        <div class="img"><img src="images/lego-fortnite-odyssey.avif" alt=""></div>
-        <p class="title">Lego Fortnite Odyssey</p>
-        <p class="role">Sound designer</p>
-      </a>
+  <!-- Highlighted projects -->
+  <section class="projects">
+    <div class="wrap">
+      <h2>highlighted projects</h2>
+      <p class="sub">(click the images below to learn more about the project!)</p>
 
-      <a class="tile" href="#">
-        <div class="img"><img src="images/fortnite.jpg" alt=""></div>
-        <p class="title">Fortnite</p>
-        <p class="role">Sound designer</p>
-      </a>
-
-      <a class="tile" href="wartorn.html">
-        <div class="img"><img src="images/wartorn.jpg" alt=""></div>
-        <p class="title">Wartorn</p>
-        <p class="role">Audio director · Stray Kite Studios</p>
-      </a>
-
-      <a class="tile" href="#">
-        <div class="img"><img src="images/failsafe.jpg" alt=""></div>
-        <p class="title">FailSafe</p>
-        <p class="role">Audio director · Stray Kite Studios</p>
-      </a>
-
-      <a class="tile" href="#">
-        <div class="img"><img src="images/unannounced-title.webp" alt=""></div>
-        <p class="title">Unannounced title</p>
-        <p class="role">Lead audio designer · Disruptive Games</p>
-      </a>
-
-      <a class="tile" href="#">
-        <div class="img"><img src="images/tungsten-and-sparky.png" alt=""></div>
-        <p class="title">Tungsten and Sparky</p>
-        <p class="role">Game director, audio lead · Code Something Cool</p>
-      </a>
-
-      <a class="tile" href="#">
-        <div class="img"><img src="images/amazin.png" alt=""></div>
-        <p class="title">Amazin</p>
-        <p class="role">Film score · Rami Awad</p>
-      </a>
-
-      <a class="tile" href="https://masonachu.itch.io/the-adventures-of-borf-clorgman-space-intern" target="_blank" rel="noopener">
-        <div class="img blank">Borf Clorgman</div>
-        <p class="title">The Adventures of Borf Clorgman: Space Intern</p>
-        <p class="role">Solo developer</p>
-      </a>
-
-      <a class="tile" href="https://beeznutzdev.itch.io/dice-of-the-hill" target="_blank" rel="noopener">
-        <div class="img blank">Dice of the Hill</div>
-        <p class="title">Dice of the Hill</p>
-        <p class="role">Score, sound design · Beez Interactive</p>
-      </a>
-
-      <a class="tile" href="https://www.kenesu.com/thesis" target="_blank" rel="noopener">
-        <div class="img blank">Portrait of a Lady</div>
-        <p class="title">Portrait of a Lady</p>
-        <p class="role">Score, sound design, mixing · Kenneth Leoncito</p>
-      </a>
-
-      <a class="tile" href="https://store.steampowered.com/app/1601830/Scoober_Splat/" target="_blank" rel="noopener">
-        <div class="img blank">Scoober Splat</div>
-        <p class="title">Scoober Splat</p>
-        <p class="role">Score, sound design · No Bloat Studios</p>
-      </a>
-
-      <a class="tile" href="https://espionage.itch.io/espionage" target="_blank" rel="noopener">
-        <div class="img blank">EspionAge</div>
-        <p class="title">EspionAge</p>
-        <p class="role">Game director, audio lead · Code Something Cool</p>
-      </a>
-
-      <a class="tile" href="https://humbergalleries.ca/nuit-blanche-fellowship-2022" target="_blank" rel="noopener">
-        <div class="img blank">Together, Apart</div>
-        <p class="title">Together, Apart</p>
-        <p class="role">Interactive installation · Project director, creative producer · Humber Galleries</p>
-      </a>
-
-      <a class="tile" href="https://humbergalleries.ca/nuit-blanche-fellowship-2021-0" target="_blank" rel="noopener">
-        <div class="img blank">A Way Closer</div>
-        <p class="title">A Way Closer</p>
-        <p class="role">Game director, creative producer, lead programmer · Humber Galleries</p>
-      </a>
-
-      <a class="tile" href="https://youtu.be/j5LfyCJLYwk?t=388" target="_blank" rel="noopener">
-        <div class="img blank">Swordcery</div>
-        <p class="title">Swordcery</p>
-        <p class="role">Score · LWMedia</p>
-      </a>
-
-      <a class="tile" href="https://www.hankelly.com/freedom" target="_blank" rel="noopener">
-        <div class="img blank">Freedom</div>
-        <p class="title">Freedom</p>
-        <p class="role">Film score · Kelly Han</p>
-      </a>
-
-      <a class="tile" href="https://www.imdb.com/title/tt16301182/" target="_blank" rel="noopener">
-        <div class="img blank">Blog 22</div>
-        <p class="title">Blog 22</p>
-        <p class="role">Sound design · Monti Khalil</p>
-      </a>
-
+      <div class="grid">
+        <a class="tile" href="#">
+          <img src="images/lego-fortnite-odyssey.avif" alt="" onerror="this.remove()">
+          <span class="title">Lego Fortnite Odyssey</span>
+          <span class="role">Sound Designer</span>
+        </a>
+        <a class="tile" href="#">
+          <img src="images/fortnite.jpg" alt="" onerror="this.remove()">
+          <span class="title">Fortnite</span>
+          <span class="role">Sound Designer</span>
+        </a>
+        <a class="tile" href="wartorn.html">
+          <img src="images/wartorn.jpg" alt="" onerror="this.remove()">
+          <span class="title">Wartorn</span>
+          <span class="role">Audio Director,
+Stray Kite Studios</span>
+        </a>
+        <a class="tile" href="#">
+          <img src="images/failsafe.jpg" alt="" onerror="this.remove()">
+          <span class="title">FailSafe</span>
+          <span class="role">Audio Director,
+Stray Kite Studios</span>
+        </a>
+        <a class="tile" href="#">
+          <img src="images/unannounced-title.webp" alt="" onerror="this.remove()">
+          <span class="title">Unannounced Title</span>
+          <span class="role">Lead Audio Designer,
+Disruptive Games</span>
+        </a>
+        <a class="tile" href="https://masonachu.itch.io/the-adventures-of-borf-clorgman-space-intern" target="_blank" rel="noopener">
+          <img src="images/borf-clorgman.jpg" alt="" onerror="this.remove()">
+          <span class="title">The Adventures of Borf Clorgman: Space Intern</span>
+          <span class="role">Solo-developer</span>
+        </a>
+        <a class="tile" href="https://beeznutzdev.itch.io/dice-of-the-hill" target="_blank" rel="noopener">
+          <img src="images/dice-of-the-hill.jpg" alt="" onerror="this.remove()">
+          <span class="title">Dice of the Hill</span>
+          <span class="role">Game Score/Sound Design,
+Beez Interactive</span>
+        </a>
+        <a class="tile" href="https://www.kenesu.com/thesis" target="_blank" rel="noopener">
+          <img src="images/portrait-of-a-lady.jpg" alt="" onerror="this.remove()">
+          <span class="title">Portrait of a Lady</span>
+          <span class="role">Film Score/Sound Design/Mixing,
+Kenneth Leoncito</span>
+        </a>
+        <a class="tile" href="https://store.steampowered.com/app/1601830/Scoober_Splat/" target="_blank" rel="noopener">
+          <img src="images/scoober-splat.jpg" alt="" onerror="this.remove()">
+          <span class="title">Scoober Splat</span>
+          <span class="role">Game Score/Sound Design,
+No Bloat Studios</span>
+        </a>
+        <a class="tile" href="https://espionage.itch.io/espionage" target="_blank" rel="noopener">
+          <img src="images/espionage.jpg" alt="" onerror="this.remove()">
+          <span class="title">EspionAge</span>
+          <span class="role">Game Director/Audio Lead,
+Code Something Cool</span>
+        </a>
+        <a class="tile" href="https://humbergalleries.ca/nuit-blanche-fellowship-2022" target="_blank" rel="noopener">
+          <img src="images/together-apart.jpg" alt="" onerror="this.remove()">
+          <span class="title">Together, Apart (Interactive Installation)</span>
+          <span class="role">Project Director/Creative Producer,
+Humber Galleries</span>
+        </a>
+        <a class="tile" href="https://humbergalleries.ca/nuit-blanche-fellowship-2021-0" target="_blank" rel="noopener">
+          <img src="images/a-way-closer.jpg" alt="" onerror="this.remove()">
+          <span class="title">A Way Closer</span>
+          <span class="role">Game Director/Creative Producer/Lead Programmer,
+Humber Galleries</span>
+        </a>
+        <a class="tile" href="https://youtu.be/j5LfyCJLYwk?t=388" target="_blank" rel="noopener">
+          <img src="images/swordcery.jpg" alt="" onerror="this.remove()">
+          <span class="title">Swordcery</span>
+          <span class="role">Game Score,
+LWMedia</span>
+        </a>
+        <a class="tile" href="#">
+          <img src="images/tungsten-and-sparky.png" alt="" onerror="this.remove()">
+          <span class="title">Tungsten and Sparky</span>
+          <span class="role">Game Director/Audio Lead,
+Code Something Cool</span>
+        </a>
+        <a class="tile" href="https://www.hankelly.com/freedom" target="_blank" rel="noopener">
+          <img src="images/freedom.jpg" alt="" onerror="this.remove()">
+          <span class="title">Freedom</span>
+          <span class="role">Film Score,
+Kelly Han</span>
+        </a>
+        <a class="tile" href="#">
+          <img src="images/amazin.png" alt="" onerror="this.remove()">
+          <span class="title">Amazin</span>
+          <span class="role">Film Score,
+Rami Awad</span>
+        </a>
+        <a class="tile" href="https://www.imdb.com/title/tt16301182/" target="_blank" rel="noopener">
+          <img src="images/blog-22.jpg" alt="" onerror="this.remove()">
+          <span class="title">Blog 22</span>
+          <span class="role">Sound Design,
+Monti Khalil</span>
+        </a>
+      </div>
     </div>
   </section>
 </main>
-
-<footer>
-  <div class="wrap">
-    <span>Mason Victoria, Toronto</span>
-    <a href="contact.html">Get in touch</a>
-  </div>
-</footer>
 
 </body>
 </html>
