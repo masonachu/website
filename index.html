@@ -174,7 +174,7 @@
   .chip:hover { border-color: var(--navy); }
   .chip[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
 
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; gap: 16px; }
   .tile {
     position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; background: #1f2630; color: var(--white);
     display: flex; flex-direction: column; justify-content: flex-end; padding: 22px;
@@ -360,13 +360,22 @@
           <img src="https://static.wixstatic.com/media/1e4cea_5db5d8336a454a9bb1cc3526e225d3e4~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/fortnite.jpg'">
           <span class="arrow">↗</span>
           <span class="title">Fortnite</span>
-          <span class="role">Sound Designer</span>
+          <span class="role">Sound Designer,
+Epic Games (via Warner Bros)</span>
+        </a>
+        <a class="tile reveal" data-cat="game" href="https://www.jollyroll.ca" target="_blank" rel="noopener">
+          <img src="images/JollyRoll.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
+          <span class="title">JollyRoll</span>
+          <span class="role">Audio Designer,
+Sugamu Studio</span>
         </a>
         <a class="tile reveal" data-cat="game" href="#">
           <img src="https://static.wixstatic.com/media/1e4cea_dbf83795d73543f8a7d047095b0c1cef~mv2.avif" alt="" onerror="this.onerror=null;this.src='images/lego-fortnite-odyssey.avif'">
           <span class="arrow">↗</span>
           <span class="title">Lego Fortnite Odyssey</span>
-          <span class="role">Sound Designer</span>
+          <span class="role">Sound Designer,
+Epic Games (via Warner Bros)</span>
         </a>
         <a class="tile reveal" data-cat="game" href="wartorn.html">
           <img src="https://static.wixstatic.com/media/1e4cea_f024472d2139459d9c5ccd08bf34d7b1~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/wartorn.jpg'">
@@ -395,19 +404,19 @@ Disruptive Games</span>
           <span class="title">The Adventures of Borf Clorgman: Space Intern</span>
           <span class="role">Solo-developer</span>
         </a>
-        <a class="tile reveal" data-cat="game" href="https://beeznutzdev.itch.io/dice-of-the-hill" target="_blank" rel="noopener">
-          <img src="https://static.wixstatic.com/media/1e4cea_0ef44f7c50f8439ebc1a327a784de5a1~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/dice-of-the-hill.png'">
-          <span class="arrow">↗</span>
-          <span class="title">Dice of the Hill</span>
-          <span class="role">Game Score/Sound Design,
-Beez Interactive</span>
-        </a>
         <a class="tile featured reveal" data-cat="film" href="https://www.kenesu.com/thesis" target="_blank" rel="noopener">
           <img src="https://static.wixstatic.com/media/1e4cea_5de6f0c4c90f4a0189d02eeaf580d74e~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/portrait-of-a-lady.jpg'">
           <span class="arrow">↗</span>
           <span class="title">Portrait of a Lady</span>
           <span class="role">Film Score/Sound Design/Mixing,
 Kenneth Leoncito</span>
+        </a>
+        <a class="tile reveal" data-cat="game" href="https://beeznutzdev.itch.io/dice-of-the-hill" target="_blank" rel="noopener">
+          <img src="https://static.wixstatic.com/media/1e4cea_0ef44f7c50f8439ebc1a327a784de5a1~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/dice-of-the-hill.png'">
+          <span class="arrow">↗</span>
+          <span class="title">Dice of the Hill</span>
+          <span class="role">Game Score/Sound Design,
+Beez Interactive</span>
         </a>
         <a class="tile reveal" data-cat="game" href="https://store.steampowered.com/app/1601830/Scoober_Splat/" target="_blank" rel="noopener">
           <img src="https://static.wixstatic.com/media/1e4cea_0687ab6d11414339aeb01794b4b04038~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/scoober-splat.png'">
@@ -427,8 +436,8 @@ Code Something Cool</span>
           <img src="https://static.wixstatic.com/media/1e4cea_edca4a8061d6426fb79467fc962b4b8f~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/together-apart.png'">
           <span class="arrow">↗</span>
           <span class="title">Together, Apart</span>
-          <span class="role">Interactive Installation
-Project Director/Creative Producer, Humber Galleries</span>
+          <span class="role">Interactive Installation Project Director/Creative Producer,
+Humber Galleries</span>
         </a>
         <a class="tile reveal" data-cat="installation" href="https://humbergalleries.ca/nuit-blanche-fellowship-2021-0" target="_blank" rel="noopener">
           <img src="https://static.wixstatic.com/media/1e4cea_837cd7c785044bbc8dd2f46b81f7f8c6~mv2.jpg" alt="" onerror="this.onerror=null;this.src='images/a-way-closer.png'">
@@ -485,8 +494,8 @@ Monti Khalil</span>
     </div>
     <div class="footer-actions">
       <a class="btn" href="contact.html">get in touch</a>
-      <a class="social" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
-      <a class="social" href="https://www.instagram.com/YOUR-INSTAGRAM" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+      <a class="social" href="https://www.linkedin.com/in/masonvictoriamusic/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+      <a class="social" href="https://instagram.com/masonachu" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
     </div>
   </div>
 </footer>

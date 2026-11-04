@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website editor</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #243147; --ink: #0b0f16; --paper: #f6f7f9; --white: #fff;
+    --sky: #86c0e8; --sky-deep: #4a9ad6; --rule: rgba(36,49,71,.16); --danger: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Quicksand", system-ui, sans-serif; font-weight: 500; color: var(--navy); background: var(--paper); font-size: 15px; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--sky-deep); outline-offset: 2px; }
+
+  /* top bar */
+  .bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--white); border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
+  .bar h1 { font-size: 17px; font-weight: 700; margin: 0 8px 0 0; }
+  .bar .status { color: var(--navy); opacity: .7; flex: 1; min-width: 200px; }
+  .btn { border: 1px solid var(--navy); background: var(--white); border-radius: 999px; padding: 8px 16px; font-weight: 600; }
+  .btn:hover { background: var(--navy); color: var(--white); }
+  .btn.primary { background: var(--navy); color: var(--white); }
+  .btn.primary:hover { background: var(--ink); border-color: var(--ink); }
+  .btn.primary:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost { border-color: var(--rule); }
+  .btn.ghost:hover { background: var(--paper); color: var(--navy); }
+
+  /* layout */
+  .app { display: grid; grid-template-columns: 460px 1fr; gap: 24px; padding: 24px 20px 60px; max-width: 1500px; margin: 0 auto; }
+  @media (max-width: 1000px) { .app { grid-template-columns: 1fr; } }
+  h2 { font-size: 13px; letter-spacing: .04em; font-weight: 700; margin: 0 0 10px; opacity: .7; }
+
+  /* welcome */
+  .welcome { grid-column: 1 / -1; background: var(--white); border: 1px solid var(--rule); border-radius: 14px; padding: 36px; max-width: 720px; margin: 20px auto; }
+  .welcome h2 { font-size: 22px; opacity: 1; letter-spacing: 0; margin-bottom: 10px; }
+  .welcome p { line-height: 1.6; margin: 0 0 14px; }
+  .welcome .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .welcome small { display: block; margin-top: 16px; opacity: .65; line-height: 1.5; }
+
+  /* tile list */
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .row-tile { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  .row-tile.dragging { opacity: .4; }
+  .row-tile.drop-before { box-shadow: 0 -3px 0 0 var(--sky-deep); }
+  .row-tile.drop-after { box-shadow: 0 3px 0 0 var(--sky-deep); }
+  .row-tile.selected { border-color: var(--sky-deep); }
+  .row-head { display: grid; grid-template-columns: 22px 44px 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; }
+  .handle { cursor: grab; color: var(--navy); opacity: .45; font-size: 18px; line-height: 1; user-select: none; text-align: center; }
+  .handle:active { cursor: grabbing; }
+  .thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #1f2630; display: block; }
+  .row-head .name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-head .meta { display: block; font-weight: 500; font-size: 13px; opacity: .65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-head .tools { display: flex; gap: 2px; }
+  .icon { border: 0; background: none; width: 30px; height: 30px; border-radius: 8px; font-size: 15px; color: var(--navy); }
+  .icon:hover { background: var(--paper); }
+  .icon.danger:hover { background: #fdecea; color: var(--danger); }
+  .big-dot { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--sky); color: var(--ink); margin-left: 6px; vertical-align: middle; }
+
+  .form { display: none; padding: 4px 14px 14px; border-top: 1px solid var(--rule); gap: 10px 12px; grid-template-columns: 1fr 1fr; }
+  .row-tile.open .form { display: grid; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field.wide { grid-column: 1 / -1; }
+  .field label { font-size: 12px; font-weight: 700; opacity: .7; }
+  .field input, .field select { border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; background: var(--white); }
+  .field input[type="file"] { padding: 6px; }
+  .check { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+  .check input { width: 18px; height: 18px; accent-color: var(--navy); }
+  .imgrow { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; grid-column: 1 / -1; }
+  .imgrow img { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; background: #1f2630; }
+  .imgrow .hint { font-size: 12px; opacity: .65; margin-top: 4px; word-break: break-all; }
+
+  .add { margin-top: 10px; width: 100%; border: 1px dashed var(--navy); background: transparent; border-radius: 12px; padding: 12px; font-weight: 600; }
+  .add:hover { background: var(--white); }
+
+  /* preview grid (mirrors the site) */
+  .preview { position: sticky; top: 76px; align-self: start; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; gap: 12px; }
+  .tile { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 10px; background: #1f2630; color: var(--white); display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; cursor: pointer; border: 2px solid transparent; }
+  .tile.featured { grid-column: span 2; grid-row: span 2; }
+  .tile.selected { border-color: var(--sky-deep); }
+  .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .tile::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(11,15,22,.85), rgba(11,15,22,.35) 50%, rgba(11,15,22,.1)); }
+  .tile .t, .tile .r { position: relative; }
+  .tile .t { font-weight: 700; font-size: 15px; line-height: 1.1; }
+  .tile.featured .t { font-size: 24px; }
+  .tile .r { font-size: 11px; opacity: .9; margin-top: 4px; }
+  .legend { margin-top: 12px; font-size: 13px; opacity: .65; line-height: 1.5; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--white); padding: 12px 18px; border-radius: 999px; opacity: 0; transition: all .25s; pointer-events: none; max-width: 90vw; }
+  .toast.show { opacity: 1; transform: translateX(-50%); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <h1>Website editor <span style="font-weight:500;opacity:.6">· highlighted projects</span></h1>
+  <span class="status" id="status">No file loaded.</span>
+  <button class="btn" id="openBtn">Open website folder</button>
+  <label class="btn ghost" id="fallbackLabel">Load index.html<input type="file" id="fallbackInput" accept=".html" hidden></label>
+  <button class="btn primary" id="saveBtn" disabled>Save changes</button>
+</div>
+
+<div class="app">
+  <section class="welcome" id="welcome">
+    <h2>Website editor</h2>
+    <p style="margin-top:-4px;opacity:.7">Currently edits the highlighted-projects tiles on the home page. More sections to come.</p>
+    <p>This tool reads the highlighted-projects grid out of <code>index.html</code>, lets you add, remove, edit and reorder tiles, and writes the result back. Nothing else on the page is touched.</p>
+    <p><strong>Open website folder</strong> is the easy route (Chrome or Edge): pick your <code>website</code> folder once and the tool can save <code>index.html</code> and copy new photos into <code>images/</code> for you.</p>
+    <p><strong>Load index.html</strong> works in any browser, including Safari. Saving then downloads a new <code>index.html</code> for you to drop into the folder, and you copy any new photos into <code>images/</code> yourself using the filename shown.</p>
+    <div class="row">
+      <button class="btn primary" id="openBtn2">Open website folder</button>
+      <label class="btn" >Load index.html<input type="file" id="fallbackInput2" accept=".html" hidden></label>
+    </div>
+    <small>After saving, commit and push as usual. Big tiles take a 2×2 block; small tiles fill in around them automatically, matching the live site.</small>
+  </section>
+
+  <div class="hidden" id="editor">
+    <h2>Tiles (drag to reorder)</h2>
+    <div class="list" id="list"></div>
+    <button class="add" id="addBtn">+ Add a tile</button>
+  </div>
+
+  <div class="preview hidden" id="previewWrap">
+    <h2>Preview</h2>
+    <div class="grid" id="preview"></div>
+    <p class="legend">Click a tile to jump to its settings. Preview uses the same four-column layout as the site; on phones the site shows two columns.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const state = { dir: null, html: '', tiles: [], selected: -1, dirty: false };
+  const GRID_OPEN = '<div class="grid" id="grid">';
+  const GRID_CLOSE = '\n      </div>\n    </div>\n  </section>';
+  const CATS = { game: 'Game', film: 'Film', installation: 'Installation' };
+
+  // ---------- parse / serialize ----------
+  function parse(html) {
+    const start = html.indexOf(GRID_OPEN);
+    const end = html.indexOf(GRID_CLOSE, start);
+    if (start < 0 || end < 0) throw new Error('Could not find the highlighted-projects grid in this file. Is it the site\u2019s index.html?');
+    const inner = html.slice(start + GRID_OPEN.length, end);
+    const doc = new DOMParser().parseFromString('<div>' + inner + '</div>', 'text/html');
+    return [...doc.querySelectorAll('a.tile')].map(a => {
+      const img = a.querySelector('img');
+      const roleText = (a.querySelector('.role')?.textContent || '').trim();
+      let role = roleText, company = '';
+      const i = roleText.indexOf(',');
+      if (i > -1) { role = roleText.slice(0, i).trim(); company = roleText.slice(i + 1).trim(); }
+      role = role.replace(/\s*\n\s*/g, ' ');
+      return {
+        title: (a.querySelector('.title')?.textContent || '').trim(),
+        role, company,
+        href: a.getAttribute('href') || '#',
+        newTab: a.getAttribute('target') === '_blank',
+        cat: a.dataset.cat || 'game',
+        featured: a.classList.contains('featured'),
+        img: img ? img.getAttribute('src') : '',
+        fallback: img ? (img.getAttribute('onerror') || '').match(/this\.src='([^']+)'/)?.[1] || '' : '',
+        file: null, preview: ''
+      };
+    });
+  }
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  function serialize(tiles) {
+    return tiles.map(t => {
+      const cls = 'tile' + (t.featured ? ' featured' : '') + ' reveal';
+      const ext = t.href && t.href !== '#' && /^https?:/i.test(t.href);
+      const target = (ext || t.newTab) ? ' target="_blank" rel="noopener"' : '';
+      const onerr = t.fallback ? `this.onerror=null;this.src='${esc(t.fallback)}'` : 'this.remove()';
+      const role = t.company ? `${t.role},\n${t.company}` : t.role;   // comma + line break, as on the live site; role alone gets neither
+      return `        <a class="${cls}" data-cat="${esc(t.cat)}" href="${esc(t.href || '#')}"${target}>
+          <img src="${esc(t.img)}" alt="" onerror="${onerr}">
+          <span class="arrow">\u2197</span>
+          <span class="title">${esc(t.title)}</span>
+          <span class="role">${esc(role)}</span>
+        </a>`;
+    }).join('\n');
+  }
+  function buildHtml() {
+    const start = state.html.indexOf(GRID_OPEN) + GRID_OPEN.length;
+    const end = state.html.indexOf(GRID_CLOSE, start);
+    return state.html.slice(0, start) + '\n' + serialize(state.tiles) + state.html.slice(end);
+  }
+
+  // ---------- loading ----------
+  async function openFolder() {
+    if (!window.showDirectoryPicker) { toast('This browser can\u2019t open folders. Use \u201cLoad index.html\u201d instead.'); return; }
+    try {
+      const dir = await showDirectoryPicker({ mode: 'readwrite' });
+      const fh = await dir.getFileHandle('index.html');
+      const html = await (await fh.getFile()).text();
+      load(html, dir, 'index.html in the folder you picked');
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+      if (e.name === 'NotFoundError') toast('That folder has no index.html. Pick the website folder itself.');
+      else toast(e.message);
+    }
+  }
+  async function loadFallback(file) {
+    if (!file) return;
+    try { load(await file.text(), null, file.name + ' (download mode)'); } catch (e) { toast(e.message); }
+  }
+  function load(html, dir, label) {
+    try { state.tiles = parse(html); } catch (e) { toast(e.message); return; }
+    state.html = html; state.dir = dir; state.dirty = false; state.selected = -1;
+    $('#welcome').classList.add('hidden'); $('#editor').classList.remove('hidden'); $('#previewWrap').classList.remove('hidden');
+    $('#status').textContent = `Loaded ${state.tiles.length} tiles from ${label}.`;
+    $('#saveBtn').disabled = false;
+    render();
+  }
+
+  // ---------- saving ----------
+  async function save() {
+    const html = buildHtml();
+    try {
+      if (state.dir) {
+        // copy any newly chosen photos into images/
+        const imagesDir = await state.dir.getDirectoryHandle('images', { create: true });
+        for (const t of state.tiles) {
+          if (!t.file) continue;
+          const fh = await imagesDir.getFileHandle(t.file.name, { create: true });
+          const w = await fh.createWritable(); await w.write(t.file); await w.close();
+          t.file = null;
+        }
+        const fh = await state.dir.getFileHandle('index.html');
+        const w = await fh.createWritable(); await w.write(html); await w.close();
+        state.html = html; state.dirty = false;
+        toast('Saved index.html. Commit and push when you\u2019re ready.');
+      } else {
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'index.html'; a.click();
+        const pending = state.tiles.filter(t => t.file).map(t => t.file.name);
+        toast(pending.length ? `Downloaded index.html. Also copy into images/: ${pending.join(', ')}` : 'Downloaded index.html. Replace the one in your website folder.');
+        state.html = html; state.dirty = false;
+      }
+      renderPreview();
+    } catch (e) { toast('Save failed: ' + e.message); }
+  }
+
+  // ---------- rendering ----------
+  function imgSrc(t) {
+    if (t.preview) return t.preview;
+    if (!t.img) return '';
+    if (/^https?:/i.test(t.img)) return t.img;
+    return '../' + t.img;   // tool lives in tools/, images live in ../images
+  }
+  function render() { renderList(); renderPreview(); }
+
+  function renderList() {
+    const list = $('#list'); list.innerHTML = '';
+    state.tiles.forEach((t, i) => {
+      const el = document.createElement('div');
+      el.className = 'row-tile' + (i === state.selected ? ' selected open' : '');
+      el.draggable = true; el.dataset.i = i;
+      const meta = [t.role, t.company].filter(Boolean).join(', ');
+      el.innerHTML = `
+        <div class="row-head">
+          <span class="handle" title="Drag to reorder">\u2630</span>
+          <img class="thumb" src="${esc(imgSrc(t))}" alt="" onerror="this.removeAttribute('src')">
+          <div><span class="name">${esc(t.title) || '<em>Untitled</em>'}${t.featured ? '<span class="big-dot">big</span>' : ''}</span><span class="meta">${esc(meta) || '&nbsp;'}</span></div>
+          <div class="tools">
+            <button class="icon" data-act="up" title="Move up" ${i === 0 ? 'disabled' : ''}>\u2191</button>
+            <button class="icon" data-act="down" title="Move down" ${i === state.tiles.length - 1 ? 'disabled' : ''}>\u2193</button>
+            <button class="icon" data-act="toggle" title="Edit">\u270E</button>
+            <button class="icon danger" data-act="del" title="Remove tile">\u2715</button>
+          </div>
+        </div>
+        <div class="form">
+          <div class="imgrow">
+            <img src="${esc(imgSrc(t))}" alt="" onerror="this.removeAttribute('src')">
+            <div class="field">
+              <label>Photo</label>
+              <input type="file" accept="image/*" data-f="file">
+              <div class="hint">${t.file ? 'New: images/' + esc(t.file.name) : esc(t.img || 'No image yet')}</div>
+            </div>
+          </div>
+          <div class="field wide"><label>Name of the game / project</label><input data-f="title" value="${esc(t.title)}" placeholder="Fortnite"></div>
+          <div class="field"><label>Role</label><input data-f="role" value="${esc(t.role)}" placeholder="Sound Designer"></div>
+          <div class="field"><label>Company</label><input data-f="company" value="${esc(t.company)}" placeholder="Epic Games"></div>
+          <div class="field wide"><label>Link (leave # for no link)</label><input data-f="href" value="${esc(t.href)}" placeholder="https://"></div>
+          <div class="field"><label>Category (for the filter chips)</label>
+            <select data-f="cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${t.cat === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+          </div>
+          <label class="check"><input type="checkbox" data-f="featured" ${t.featured ? 'checked' : ''}> Big tile (2\u00d72)</label>
+        </div>`;
+      // field changes
+      el.querySelectorAll('[data-f]').forEach(inp => inp.addEventListener('input', e => onField(i, inp, e)));
+      el.querySelectorAll('[data-f="cat"]').forEach(inp => inp.addEventListener('change', e => onField(i, inp, e)));
+      el.querySelector('.row-head').addEventListener('click', e => {
+        const act = e.target.closest('[data-act]')?.dataset.act;
+        if (act === 'up') move(i, i - 1); else if (act === 'down') move(i, i + 1);
+        else if (act === 'del') { if (confirm(`Remove \u201c${t.title || 'this tile'}\u201d?`)) { state.tiles.splice(i, 1); state.selected = -1; markDirty(); render(); } }
+        else if (!e.target.closest('.handle')) select(i === state.selected ? -1 : i);
+      });
+      // drag & drop
+      el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i); el.classList.add('dragging'); });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      el.addEventListener('dragover', e => { e.preventDefault(); const r = el.getBoundingClientRect(); const before = e.clientY < r.top + r.height / 2; el.classList.toggle('drop-before', before); el.classList.toggle('drop-after', !before); });
+      el.addEventListener('dragleave', () => el.classList.remove('drop-before', 'drop-after'));
+      el.addEventListener('drop', e => {
+        e.preventDefault(); el.classList.remove('drop-before', 'drop-after');
+        const from = +e.dataTransfer.getData('text/plain'); const r = el.getBoundingClientRect();
+        let to = i + (e.clientY < r.top + r.height / 2 ? 0 : 1); if (from < to) to--; move(from, to);
+      });
+      list.appendChild(el);
+    });
+  }
+
+  function renderPreview() {
+    const g = $('#preview'); g.innerHTML = '';
+    state.tiles.forEach((t, i) => {
+      const d = document.createElement('div');
+      d.className = 'tile' + (t.featured ? ' featured' : '') + (i === state.selected ? ' selected' : '');
+      const src = imgSrc(t);
+      d.innerHTML = `${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : ''}<span class="t">${esc(t.title)}</span><span class="r">${esc(t.company ? t.role + ',' : t.role)}${t.company ? '<br>' + esc(t.company) : ''}</span>`;
+      d.addEventListener('click', () => { select(i); document.querySelector(`.row-tile[data-i="${i}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      g.appendChild(d);
+    });
+    $('#saveBtn').textContent = state.dirty ? 'Save changes \u2022' : 'Save changes';
+  }
+
+  // ---------- actions ----------
+  function select(i) { state.selected = i; render(); }
+  function move(from, to) {
+    if (to < 0 || to >= state.tiles.length || from === to) return;
+    const [t] = state.tiles.splice(from, 1); state.tiles.splice(to, 0, t);
+    state.selected = to; markDirty(); render();
+  }
+  function markDirty() { state.dirty = true; }
+  function onField(i, inp, e) {
+    const t = state.tiles[i], f = inp.dataset.f;
+    if (f === 'file') {
+      const file = inp.files[0]; if (!file) return;
+      const safe = file.name.replace(/\s+/g, '-').replace(/[^A-Za-z0-9._-]/g, '');
+      t.file = new File([file], safe, { type: file.type });
+      t.img = 'images/' + safe; t.fallback = '';
+      if (t.preview) URL.revokeObjectURL(t.preview);
+      t.preview = URL.createObjectURL(file);
+      markDirty(); render(); return;
+    }
+    if (f === 'featured') t.featured = inp.checked; else t[f] = inp.value;
+    markDirty();
+    // light refresh: preview + row header only, keep focus in the field
+    renderPreview();
+    const row = inp.closest('.row-tile');
+    row.querySelector('.name').innerHTML = `${esc(t.title) || '<em>Untitled</em>'}${t.featured ? '<span class="big-dot">big</span>' : ''}`;
+    row.querySelector('.meta').textContent = [t.role, t.company].filter(Boolean).join(', ') || '\u00a0';
+  }
+  function addTile() {
+    state.tiles.unshift({ title: '', role: '', company: '', href: '#', newTab: false, cat: 'game', featured: false, img: '', fallback: '', file: null, preview: '' });
+    state.selected = 0; markDirty(); render();
+    document.querySelector('.row-tile input[data-f="title"]')?.focus();
+  }
+  let toastT; function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4500); }
+
+  // ---------- wire up ----------
+  $('#openBtn').onclick = $('#openBtn2').onclick = openFolder;
+  $('#fallbackInput').onchange = e => loadFallback(e.target.files[0]);
+  $('#fallbackInput2').onchange = e => loadFallback(e.target.files[0]);
+  $('#saveBtn').onclick = save;
+  $('#addBtn').onclick = addTile;
+  addEventListener('beforeunload', e => { if (state.dirty) { e.preventDefault(); e.returnValue = ''; } });
+  if (!window.showDirectoryPicker) { $('#openBtn').classList.add('hidden'); $('#openBtn2').classList.add('hidden'); }
+})();
+</script>
+</body>
+</html>

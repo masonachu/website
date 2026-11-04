@@ -37,20 +37,22 @@
   .quote cite { display: block; margin-top: 12px; font-style: normal; font-size: 14px; line-height: 1.55; font-weight: 500; color: #d3d8de; text-align: right; }
   .quote cite strong { font-weight: 700; color: var(--white); }
 
-  .works { padding: 100px 0 90px; }
+  .works { padding: 80px 0 70px; }
   .works h2 { font-family: var(--sans); font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; margin-bottom: 44px; }
-  .works-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-  .work { background: var(--paper); border-radius: 14px; padding: 26px 26px 22px; }
-  .work h3 { font-family: var(--sans); font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+  .works-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+  .work { background: var(--paper); border-radius: 14px; padding: 20px 20px 18px; }
+  .work h3 { font-family: var(--sans); font-size: 22px; font-weight: 700; margin-bottom: 12px; }
   .work .player { border-radius: 10px; overflow: hidden; background: var(--white); }
   .work .player iframe { display: block; width: 100%; border: 0; }
-  .work .video-player { aspect-ratio: 16 / 9; }
+  .work .video-player { aspect-ratio: 16 / 9; width: min(100%, calc(52vh * 16 / 9)); margin-inline: auto; }
   .work .video-player iframe { height: 100%; }
   .work .player.placeholder { aspect-ratio: 16 / 7; display: grid; place-items: center; border: 1px dashed var(--rule); color: var(--navy); opacity: .55; font-size: 14px; text-align: center; padding: 16px; }
 
-  .cta { position: relative; color: var(--white); padding: 90px 0; text-align: center; background: var(--ink); border-bottom: 1px solid rgba(255,255,255,.08); }
-  .cta .wrap { position: relative; }
-  .cta h2 { font-family: var(--sans); font-size: clamp(30px, 3.4vw, 44px); font-weight: 700; margin-bottom: 28px; }
+  .more { text-align: center; margin-top: 40px; }
+  .more h2 { font-family: var(--sans); font-size: clamp(26px, 2.8vw, 34px); font-weight: 700; margin-bottom: 20px; }
+  .btn.btn-dark { color: var(--navy); border-color: var(--navy); }
+  .btn.btn-dark::before { background: var(--navy); }
+  .btn.btn-dark:hover { color: var(--white); }
 
   @media (max-width: 960px) {
     /* mobile: photo as its own block above the quotes rather than behind them */
@@ -386,15 +388,13 @@
           <div class="player video-player"><iframe src="https://www.youtube.com/embed/k5yNlGjm6NI?si=3YFxHfVmMPYtxfxC" title="YouTube video player" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
         </div>
       </div>
+      <div class="more reveal">
+        <h2>want to hear tracks in full?</h2>
+        <a class="btn btn-dark" href="extensiveportfolio.html">extensive portfolio</a>
+      </div>
     </div>
   </section>
 
-  <section class="cta">
-    <div class="wrap">
-      <h2 class="reveal">want to hear tracks in full?</h2>
-      <a class="btn reveal" href="extensiveportfolio.html">extensive portfolio</a>
-    </div>
-  </section>
 </main>
 
 <footer class="site-footer">
@@ -405,8 +405,8 @@
     </div>
     <div class="footer-actions">
       <a class="btn" href="contact.html">get in touch</a>
-      <a class="social" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
-      <a class="social" href="https://www.instagram.com/YOUR-INSTAGRAM" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+      <a class="social" href="https://www.linkedin.com/in/masonvictoriamusic/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+      <a class="social" href="https://instagram.com/masonachu" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
     </div>
   </div>
 </footer>
