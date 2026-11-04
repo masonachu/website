@@ -57,6 +57,30 @@
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   .wrap { width: min(var(--content), 100% - 3rem); margin-inline: auto; }
 
+  /* ---------- page transitions ---------- */
+  /* Modern browsers: cross-document view transition (no JS needed) */
+  @view-transition { navigation: auto; }
+  /* fade through a solid colour: old page out, then new page in, never both at once */
+  ::view-transition { background: var(--ink); }
+  main { background: var(--white); }
+  ::view-transition-old(root) { animation: fade-out .18s ease-in both; mix-blend-mode: normal; }
+  ::view-transition-new(root) { animation: fade-in .28s ease-out .18s both; mix-blend-mode: normal; }
+  @keyframes fade-out { to { opacity: 0; } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  /* header and footer are carried across unchanged: no fade, no morph */
+  .site-header { view-transition-name: site-header; }
+  .site-footer { view-transition-name: site-footer; }
+  ::view-transition-group(site-header), ::view-transition-group(site-footer) { animation: none; }
+  ::view-transition-old(site-header), ::view-transition-old(site-footer) { display: none; }
+  ::view-transition-new(site-header), ::view-transition-new(site-footer) { animation: none; }
+  /* Fallback for browsers without view transitions (driven by the script below): only <main> fades */
+  html.no-vt main { animation: fade-in .3s ease-out both; }
+  html.no-vt.leaving main { opacity: 0; transition: opacity .18s ease-in; }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root), ::view-transition-new(root), html.no-vt main { animation: none; }
+    html.no-vt.leaving main { transition: none; }
+  }
+
   /* ---------- scroll progress ---------- */
   .progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 60; transform-origin: left; transform: scaleX(0); background: var(--sky-deep); pointer-events: none; }
 
@@ -83,7 +107,7 @@
     content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--navy);
     transform: scaleX(0); transform-origin: right; transition: transform .35s var(--ease);
   }
-  .nav li.active > a::after, .nav li:hover > a::after, .nav details:hover summary::after, .nav details[open] summary::after { transform: scaleX(1); transform-origin: left; }
+  .nav li.active > a::after, .nav li.active summary::after, .nav li:hover > a::after, .nav details:hover summary::after, .nav details[open] summary::after { transform: scaleX(1); transform-origin: left; }
   .nav summary { list-style: none; }
   .nav summary::-webkit-details-marker { display: none; }
   .nav details ul {
@@ -461,8 +485,8 @@ Monti Khalil</span>
     </div>
     <div class="footer-actions">
       <a class="btn" href="contact.html">get in touch</a>
-      <a class="social" href="https://www.linkedin.com/in/masonvictoriamusic/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
-      <a class="social" href="http://instagram.com/masonachu" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+      <a class="social" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+      <a class="social" href="https://www.instagram.com/YOUR-INSTAGRAM" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
     </div>
   </div>
 </footer>
@@ -509,7 +533,7 @@ Monti Khalil</span>
       else if (y < 20) header.classList.remove('compact');
       const max = document.documentElement.scrollHeight - innerHeight;
       progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
-      if (!reduce) {
+      if (!reduce && hello && parallax) {
         const r = hello.getBoundingClientRect();
         const t = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; // -1..1 as section crosses viewport
         parallax.style.transform = `translateY(${t * -60}px)`;
@@ -542,6 +566,21 @@ Monti Khalil</span>
     });
   });
 
+  // Page transitions: fallback for browsers without cross-document view transitions
+  if (!('startViewTransition' in document) || !CSS.supports('view-transition-name: x')) {
+    document.documentElement.classList.add('no-vt');
+    addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a || a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin || url.pathname === location.pathname) return;   // external or same-page anchor
+      e.preventDefault();
+      document.documentElement.classList.add('leaving');
+      setTimeout(() => { location.href = url.href; }, 180);
+    });
+    // coming back via the back button restores the page from cache: make sure it's visible
+    addEventListener('pageshow', () => document.documentElement.classList.remove('leaving'));
+  }
 </script>
 </body>
 </html>
