@@ -15,9 +15,10 @@
   }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: "Quicksand", system-ui, sans-serif; font-weight: 500; color: var(--navy); background: var(--paper); font-size: 15px; }
-  button, input, select { font: inherit; color: inherit; }
+  button, input, select, textarea { font: inherit; color: inherit; }
   button { cursor: pointer; }
-  button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--sky-deep); outline-offset: 2px; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--sky-deep); outline-offset: 2px; }
+  code { font-size: .92em; background: rgba(36,49,71,.08); padding: 1px 5px; border-radius: 4px; }
 
   /* top bar */
   .bar { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 12px; padding: 12px 20px; background: var(--white); border-bottom: 1px solid var(--rule); flex-wrap: wrap; }
@@ -32,54 +33,110 @@
   .btn.ghost:hover { background: var(--paper); color: var(--navy); }
 
   /* layout */
-  .app { display: grid; grid-template-columns: 460px 1fr; gap: 24px; padding: 24px 20px 60px; max-width: 1500px; margin: 0 auto; }
-  @media (max-width: 1000px) { .app { grid-template-columns: 1fr; } }
+  .app { display: grid; grid-template-columns: 230px 480px minmax(0, 1fr); gap: 24px; padding: 24px 20px 60px; max-width: 1600px; margin: 0 auto; align-items: start; }
+  @media (max-width: 1200px) { .app { grid-template-columns: 230px minmax(0, 1fr); } .preview { grid-column: 1 / -1; position: static !important; } }
+  @media (max-width: 800px) { .app { grid-template-columns: 1fr; } .nav { position: static !important; } }
   h2 { font-size: 13px; letter-spacing: .04em; font-weight: 700; margin: 0 0 10px; opacity: .7; }
+  .hidden { display: none !important; }
 
   /* welcome */
   .welcome { grid-column: 1 / -1; background: var(--white); border: 1px solid var(--rule); border-radius: 14px; padding: 36px; max-width: 720px; margin: 20px auto; }
   .welcome h2 { font-size: 22px; opacity: 1; letter-spacing: 0; margin-bottom: 10px; }
   .welcome p { line-height: 1.6; margin: 0 0 14px; }
+  .welcome ul { margin: 0 0 14px; padding-left: 20px; line-height: 1.6; }
   .welcome .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
   .welcome small { display: block; margin-top: 16px; opacity: .65; line-height: 1.5; }
 
-  /* tile list */
+  /* page / section navigator */
+  .nav { position: sticky; top: 76px; display: flex; flex-direction: column; gap: 14px; }
+  .pg-name { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; opacity: .55; padding: 0 10px 6px; }
+  .sec { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 9px; padding: 8px 10px; font-weight: 600; color: var(--navy); }
+  .sec:hover { background: var(--white); }
+  .sec.on { background: var(--navy); color: var(--white); }
+  .sec .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sky-deep); flex: none; }
+  .sec.on .dot { background: var(--sky); }
+
+  /* editor column */
+  .editor-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+  .editor-head h2 { margin: 0; }
+  .editor-head .crumb { font-weight: 500; opacity: .6; }
+  .note { font-size: 13px; opacity: .7; line-height: 1.5; margin: 0 0 12px; }
+  .card { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .card h3 { font-size: 13px; font-weight: 700; margin: 0 0 10px; opacity: .8; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field.wide { grid-column: 1 / -1; }
+  .field label { font-size: 12px; font-weight: 700; opacity: .7; }
+  .field input, .field select, .field textarea { border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; background: var(--white); width: 100%; }
+  .field textarea { min-height: 76px; resize: vertical; line-height: 1.5; }
+  .field input[type="file"] { padding: 6px; }
+  .field .hint { font-size: 12px; opacity: .65; word-break: break-all; }
+  .check { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+  .check input { width: 18px; height: 18px; accent-color: var(--navy); }
+  .imgrow { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; grid-column: 1 / -1; }
+  .imgrow img { width: 96px; height: 64px; border-radius: 10px; object-fit: cover; background: #1f2630; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--sky); color: var(--ink); vertical-align: middle; }
+  .badge.muted { background: rgba(36,49,71,.1); color: var(--navy); }
+
+  /* reorderable item rows (tiles, paragraphs, quotes, players) */
   .list { display: flex; flex-direction: column; gap: 8px; }
-  .row-tile { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
-  .row-tile.dragging { opacity: .4; }
-  .row-tile.drop-before { box-shadow: 0 -3px 0 0 var(--sky-deep); }
-  .row-tile.drop-after { box-shadow: 0 3px 0 0 var(--sky-deep); }
-  .row-tile.selected { border-color: var(--sky-deep); }
-  .row-head { display: grid; grid-template-columns: 22px 44px 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; }
+  .row-item { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+  .row-item.dragging { opacity: .4; }
+  .row-item.drop-before { box-shadow: 0 -3px 0 0 var(--sky-deep); }
+  .row-item.drop-after { box-shadow: 0 3px 0 0 var(--sky-deep); }
+  .row-item.selected { border-color: var(--sky-deep); }
+  .row-head { display: grid; grid-template-columns: 22px auto 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; cursor: default; }
+  .row-head.no-thumb { grid-template-columns: 22px 1fr auto; }
   .handle { cursor: grab; color: var(--navy); opacity: .45; font-size: 18px; line-height: 1; user-select: none; text-align: center; }
   .handle:active { cursor: grabbing; }
   .thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #1f2630; display: block; }
-  .row-head .name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row-head .name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
   .row-head .meta { display: block; font-weight: 500; font-size: 13px; opacity: .65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .row-head .tools { display: flex; gap: 2px; }
   .icon { border: 0; background: none; width: 30px; height: 30px; border-radius: 8px; font-size: 15px; color: var(--navy); }
   .icon:hover { background: var(--paper); }
+  .icon:disabled { opacity: .3; cursor: default; background: none; }
   .icon.danger:hover { background: #fdecea; color: var(--danger); }
-  .big-dot { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--sky); color: var(--ink); margin-left: 6px; vertical-align: middle; }
-
   .form { display: none; padding: 4px 14px 14px; border-top: 1px solid var(--rule); gap: 10px 12px; grid-template-columns: 1fr 1fr; }
-  .row-tile.open .form { display: grid; }
-  .field { display: flex; flex-direction: column; gap: 4px; }
-  .field.wide { grid-column: 1 / -1; }
-  .field label { font-size: 12px; font-weight: 700; opacity: .7; }
-  .field input, .field select { border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; background: var(--white); }
-  .field input[type="file"] { padding: 6px; }
-  .check { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
-  .check input { width: 18px; height: 18px; accent-color: var(--navy); }
-  .imgrow { display: grid; grid-template-columns: 72px 1fr; gap: 12px; align-items: center; grid-column: 1 / -1; }
-  .imgrow img { width: 72px; height: 72px; border-radius: 10px; object-fit: cover; background: #1f2630; }
-  .imgrow .hint { font-size: 12px; opacity: .65; margin-top: 4px; word-break: break-all; }
-
+  .row-item.open .form { display: grid; }
   .add { margin-top: 10px; width: 100%; border: 1px dashed var(--navy); background: transparent; border-radius: 12px; padding: 12px; font-weight: 600; }
   .add:hover { background: var(--white); }
 
-  /* preview grid (mirrors the site) */
-  .preview { position: sticky; top: 76px; align-self: start; }
+  /* previews */
+  .preview { position: sticky; top: 76px; align-self: start; min-width: 0; }
+  .legend { margin-top: 12px; font-size: 13px; opacity: .65; line-height: 1.5; }
+  .pv-dark { background: var(--ink); border-radius: 14px; padding: 22px; color: var(--white); }
+  .pv-video { aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; }
+  .pv-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .pv-video.main { max-width: 640px; margin: 0 auto; }
+  .pv-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .pv-title { text-align: center; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; margin: 0 0 12px; opacity: .85; }
+  .pv-cap { text-align: center; font-size: 12px; opacity: .6; margin-top: 8px; }
+  .pv-photo { position: relative; border-radius: 14px; overflow: hidden; background: #1f2630 center / cover no-repeat; min-height: 360px; display: grid; }
+  .pv-photo .panel { align-self: stretch; justify-self: end; width: min(100%, 62%); padding: 34px 32px; color: var(--white); background: linear-gradient(to right, rgba(36,49,71,0), rgba(36,49,71,.92) 28%, rgba(36,49,71,.96)); }
+  .pv-photo .panel h2 { color: var(--white); opacity: 1; font-size: 30px; letter-spacing: -.01em; margin: 0 0 16px; }
+  .pv-photo .panel p { font-size: 14px; line-height: 1.7; margin: 0 0 14px; }
+  .pv-photo .panel h3 { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--sky); font-weight: 500; text-align: right; margin: 18px 0 0; }
+  .pv-photo blockquote { margin: 0 0 18px; }
+  .pv-photo blockquote p { font-size: 14px; line-height: 1.6; margin: 0 0 8px; }
+  .pv-photo cite { font-style: normal; font-size: 12px; color: #d3d8de; line-height: 1.5; display: block; }
+  .pv-photo cite strong { color: var(--white); }
+  .pv-works { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .pv-works.two { grid-template-columns: 1fr 1fr; }
+  .pv-work { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; min-width: 0; }
+  .pv-work.full { grid-column: 1 / -1; }
+  .pv-work h3 { font-size: 15px; margin: 0 0 10px; }
+  .pv-work .player { border-radius: 10px; overflow: hidden; background: var(--paper); }
+  .pv-work .player iframe { display: block; width: 100%; border: 0; }
+  .pv-work .player.video-player { aspect-ratio: 16 / 9; }
+  .pv-work .player.video-player iframe { height: 100%; }
+  .pv-work .player.bandcamp { display: flex; justify-content: center; background: transparent; }
+  .pv-work .player.bandcamp iframe { width: 700px; max-width: 100%; height: 373px; }
+  .pv-work video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: var(--ink); object-fit: cover; margin-bottom: 10px; }
+  .pv-h { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
+  .pv-work .player.placeholder { aspect-ratio: 16 / 7; display: grid; place-items: center; border: 1px dashed var(--rule); opacity: .55; font-size: 13px; }
+
+  /* tile grid preview (mirrors the site) */
   .grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-flow: dense; gap: 12px; }
   .tile { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 10px; background: #1f2630; color: var(--white); display: flex; flex-direction: column; justify-content: flex-end; padding: 14px; cursor: pointer; border: 2px solid transparent; }
   .tile.featured { grid-column: span 2; grid-row: span 2; }
@@ -90,288 +147,698 @@
   .tile .t { font-weight: 700; font-size: 15px; line-height: 1.1; }
   .tile.featured .t { font-size: 24px; }
   .tile .r { font-size: 11px; opacity: .9; margin-top: 4px; }
-  .legend { margin-top: 12px; font-size: 13px; opacity: .65; line-height: 1.5; }
 
-  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--white); padding: 12px 18px; border-radius: 999px; opacity: 0; transition: all .25s; pointer-events: none; max-width: 90vw; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--white); padding: 12px 18px; border-radius: 999px; opacity: 0; transition: all .25s; pointer-events: none; max-width: 90vw; z-index: 9; }
   .toast.show { opacity: 1; transform: translateX(-50%); }
-  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
 <div class="bar">
-  <h1>Website editor <span style="font-weight:500;opacity:.6">· highlighted projects</span></h1>
-  <span class="status" id="status">No file loaded.</span>
+  <h1>Website editor</h1>
+  <span class="status" id="status">Nothing loaded.</span>
   <button class="btn" id="openBtn">Open website folder</button>
-  <label class="btn ghost" id="fallbackLabel">Load index.html<input type="file" id="fallbackInput" accept=".html" hidden></label>
+  <label class="btn ghost" id="fallbackLabel">Load pages<input type="file" id="fallbackInput" accept=".html" multiple hidden></label>
   <button class="btn primary" id="saveBtn" disabled>Save changes</button>
 </div>
 
 <div class="app">
   <section class="welcome" id="welcome">
     <h2>Website editor</h2>
-    <p style="margin-top:-4px;opacity:.7">Currently edits the highlighted-projects tiles on the home page. More sections to come.</p>
-    <p>This tool reads the highlighted-projects grid out of <code>index.html</code>, lets you add, remove, edit and reorder tiles, and writes the result back. Nothing else on the page is touched.</p>
-    <p><strong>Open website folder</strong> is the easy route (Chrome or Edge): pick your <code>website</code> folder once and the tool can save <code>index.html</code> and copy new photos into <code>images/</code> for you.</p>
-    <p><strong>Load index.html</strong> works in any browser, including Safari. Saving then downloads a new <code>index.html</code> for you to drop into the folder, and you copy any new photos into <code>images/</code> yourself using the filename shown.</p>
+    <p>Edits the parts of the site that change most often, and writes them straight back into the page files. Everything else in each file is left exactly as it is.</p>
+    <ul>
+      <li><strong>Reels</strong> — the Vimeo videos at the top of the home page and each portfolio page.</li>
+      <li><strong>Bio</strong> — the “hello!” text and the photo behind it on the home page.</li>
+      <li><strong>Highlighted projects</strong> — the tiles on the home page: photo, name, role, link, order, big/small.</li>
+      <li><strong>Quotes &amp; photo</strong> — the quotes band on each portfolio page and its background photo.</li>
+      <li><strong>Players</strong> — the SoundCloud / YouTube / Bandcamp cards on the composition pages.</li>
+      <li><strong>Videos</strong> — the sound design clips: title, poster, streaming link and local MP4.</li>
+    </ul>
+    <p><strong>Open website folder</strong> is the easy route (Chrome or Edge): pick your <code>website</code> folder once and the tool loads every page, saves them back and copies new photos into <code>images/</code> for you.</p>
+    <p><strong>Load pages</strong> works in any browser, including Safari: pick one or more of the <code>.html</code> files. Saving then downloads new copies for you to drop into the folder, and you copy any new photos into <code>images/</code> yourself using the filenames shown.</p>
     <div class="row">
       <button class="btn primary" id="openBtn2">Open website folder</button>
-      <label class="btn" >Load index.html<input type="file" id="fallbackInput2" accept=".html" hidden></label>
+      <label class="btn">Load pages<input type="file" id="fallbackInput2" accept=".html" multiple hidden></label>
     </div>
-    <small>After saving, commit and push as usual. Big tiles take a 2×2 block; small tiles fill in around them automatically, matching the live site.</small>
+    <small>After saving, commit and push as usual. New pages built from the same template show up here automatically.</small>
   </section>
 
-  <div class="hidden" id="editor">
-    <h2>Tiles (drag to reorder)</h2>
-    <div class="list" id="list"></div>
-    <button class="add" id="addBtn">+ Add a tile</button>
-  </div>
-
-  <div class="preview hidden" id="previewWrap">
-    <h2>Preview</h2>
-    <div class="grid" id="preview"></div>
-    <p class="legend">Click a tile to jump to its settings. Preview uses the same four-column layout as the site; on phones the site shows two columns.</p>
-  </div>
+  <nav class="nav hidden" id="nav"></nav>
+  <div class="hidden" id="editor"></div>
+  <div class="preview hidden" id="previewWrap"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 (() => {
+  // ============================================================ helpers
   const $ = s => document.querySelector(s);
-  const state = { dir: null, html: '', tiles: [], selected: -1, dirty: false };
+  const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escText = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const escUrl = s => String(s ?? '').replace(/"/g, '%22');   // URLs keep their raw & so saved files match what was there
+  const decode = h => { const t = document.createElement('textarea'); t.innerHTML = h; return t.value; };
+  const frag = h => new DOMParser().parseFromString('<div id="r">' + h + '</div>', 'text/html').getElementById('r');
+  const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+  function sectionSlice(html, open) { const s = html.indexOf(open); if (s < 0) return null; const e = html.indexOf('</section>', s); return e < 0 ? null : [s, e + 10]; }
+  function replaceSlice(html, [s, e], fn) { return html.slice(0, s) + fn(html.slice(s, e)) + html.slice(e); }
+  const isRemote = p => /^(https?:|blob:|data:)/i.test(p || '');
+  const safeName = n => n.replace(/\s+/g, '-').replace(/[^A-Za-z0-9._-]/g, '');
+
+  const PAGE_LABELS = {
+    'index.html': 'Home', 'compositionportfolio.html': 'Composition portfolio', 'extensiveportfolio.html': 'Extensive portfolio',
+    'sounddesignportfolio.html': 'Sound design portfolio', 'programming.html': 'Implementation portfolio', 'chartingportfolio.html': 'Charting portfolio',
+    'about.html': 'About', 'contact.html': 'Contact', 'wartorn.html': 'Wartorn', 'borf-clorgman.html': 'Borf Clorgman', 'ssjo.html': 'SSJO'
+  };
+  const PAGE_ORDER = Object.keys(PAGE_LABELS);
+  const SKIP = /^(index-backup|index-original|website-editor)\.html$/i;
+
+  // ============================================================ state
+  // page: { name, html, sections: [{ type, data, dirty }], files: Map(name -> File) }
+  const state = { dir: null, pages: [], cur: { p: -1, s: -1 }, sel: -1, imgCache: new Map() };
+  const curPage = () => state.pages[state.cur.p];
+  const curSec = () => curPage()?.sections[state.cur.s];
+  function pageLabel(p) { return PAGE_LABELS[p.name] || p.html.match(/<title>([^<]*)<\/title>/)?.[1]?.replace(/^Mason Victoria\s*[—–|-]\s*/i, '') || p.name; }
+
+  // local image → object URL (folder mode) so previews work wherever this file is opened from
+  async function cacheImage(path) {
+    if (!state.dir || !path || isRemote(path) || state.imgCache.has(path)) return;
+    try {
+      let d = state.dir; const parts = path.split('/'); const fn = parts.pop();
+      for (const part of parts) d = await d.getDirectoryHandle(part);
+      state.imgCache.set(path, URL.createObjectURL(await (await d.getFileHandle(fn)).getFile()));
+    } catch { state.imgCache.set(path, path); }
+  }
+  const imgSrc = p => !p ? '' : (state.imgCache.get(p) || p);
+
+  // ============================================================ section modules
+  // Each module: label, parse(html) → data | null, apply(html, data) → html,
+  // images(data) → local image paths to preload, editor(sec, page) → element, preview(sec, page) → element | null
+
+  const SECTIONS = {};
+
+  // ---------- reels (Vimeo players in <section class="reels">) ----------
+  SECTIONS.reels = {
+    label: 'Reels',
+    parse(html) {
+      const sl = sectionSlice(html, '<section class="reels">'); if (!sl) return null;
+      const s = html.slice(sl[0], sl[1]); const items = [];
+      const re = /<iframe src="https:\/\/player\.vimeo\.com\/video\/(\d+)[^"]*"[^>]*?title="([^"]*)"/g; let m;
+      while ((m = re.exec(s))) items.push({ id: m[1], title: decode(m[2]) });
+      if (!items.length) return null;
+      const pt = s.match(/<p class="page-title">([^<]*)<\/p>/);
+      return { items, pageTitle: pt ? decode(pt[1]) : null };
+    },
+    apply(html, d) {
+      return replaceSlice(html, sectionSlice(html, '<section class="reels">'), s => {
+        let n = 0;
+        s = s.replace(/(<iframe src="https:\/\/player\.vimeo\.com\/video\/)(\d+)([^"]*"[^>]*?title=")([^"]*)(")/g, (m, a, id, b, t, c) => { const it = d.items[n++]; return it ? a + it.id + b + esc(it.title) + c : m; });
+        if (d.pageTitle != null) s = s.replace(/(<p class="page-title">)([^<]*)(<\/p>)/, (m, a, t, c) => a + escText(d.pageTitle) + c);
+        return s;
+      });
+    },
+    images() { return []; },
+    editor(sec) {
+      const d = sec.data;
+      const root = el(`<div>
+        <p class="note">Paste a Vimeo link or just the number from it (e.g. <code>739765376</code>). The label is what screen readers call the player; it doesn't show on the page.</p>
+        ${d.pageTitle != null ? `<div class="card"><div class="fields"><div class="field wide"><label>Title above the player</label><input data-path="pageTitle" data-pv="pageTitle" value="${esc(d.pageTitle)}"></div></div></div>` : ''}
+        ${d.items.map((it, i) => `<div class="card"><h3>${i === 0 && d.items.length > 1 ? 'Main reel' : d.items.length > 1 ? 'Reel ' + (i + 1) : 'Reel'}</h3><div class="fields">
+          <div class="field"><label>Vimeo video ID or link</label><input data-vimeo="${i}" value="${esc(it.id)}" placeholder="739765376"></div>
+          <div class="field"><label>Label</label><input data-path="items.${i}.title" value="${esc(it.title)}"></div>
+        </div></div>`).join('')}
+      </div>`);
+      bindText(root, sec);
+      root.querySelectorAll('[data-vimeo]').forEach(inp => inp.addEventListener('change', () => {
+        const i = +inp.dataset.vimeo; const m = inp.value.match(/(\d{6,})/);
+        if (!m) { toast('That doesn’t look like a Vimeo video. Paste the video link or its number.'); inp.value = d.items[i].id; return; }
+        d.items[i].id = m[1]; inp.value = m[1]; dirty(sec);
+        const f = $(`#previewWrap iframe[data-reel="${i}"]`); if (f) f.src = vimeoSrc(m[1]);
+      }));
+      return root;
+    },
+    preview(sec) {
+      const d = sec.data;
+      const player = (it, i, cls) => `<div class="pv-video ${cls}"><iframe data-reel="${i}" src="${vimeoSrc(it.id)}" title="${esc(it.title)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+      const [main, ...rest] = d.items;
+      return el(`<div><h2>Preview</h2><div class="pv-dark">
+        ${d.pageTitle != null ? `<p class="pv-title" data-pv="pageTitle">${esc(d.pageTitle)}</p>` : ''}
+        ${player(main, 0, 'main')}
+        ${rest.length ? `<div class="pv-pair">${rest.map((it, i) => player(it, i + 1, '')).join('')}</div>` : ''}
+      </div><p class="legend">Players reload when you change a video ID. Buttons below the players on the real page aren't shown here.</p></div>`);
+    }
+  };
+  const vimeoSrc = id => `https://player.vimeo.com/video/${id}?title=0&byline=0&portrait=0`;
+
+  // ---------- bio (hello! panel on the home page) ----------
+  SECTIONS.bio = {
+    label: 'Bio',
+    parse(html) {
+      const sl = sectionSlice(html, '<section class="hello"'); if (!sl) return null;
+      const panel = frag(html.slice(sl[0], sl[1])).querySelector('.panel'); if (!panel) return null;
+      return {
+        heading: panel.querySelector('h2')?.textContent ?? '',
+        paras: [...panel.querySelectorAll(':scope > p')].map(p => p.textContent),
+        sub: panel.querySelector('h3')?.textContent ?? '',
+        bg: html.match(/\.hello \.bg \{[^}]*url\("([^"]*)"\)/)?.[1] || '', bgPreview: ''
+      };
+    },
+    apply(html, d) {
+      html = html.replace(/(\.hello \.bg \{[^}]*url\(")([^"]*)("\))/, (m, a, u, c) => a + d.bg + c);
+      return replaceSlice(html, sectionSlice(html, '<section class="hello"'), s => {
+        s = s.replace(/<h2 class="reveal">[\s\S]*?(?=\n\s*<h3 class="reveal">)/, `<h2 class="reveal">${escText(d.heading)}</h2>\n` + d.paras.map(p => `      <p class="reveal">${escText(p)}</p>`).join('\n'));
+        return s.replace(/(<h3 class="reveal">)([^<]*)(<\/h3>)/, (m, a, t, c) => a + escText(d.sub) + c);
+      });
+    },
+    images(d) { return [d.bg]; },
+    editor(sec, page) {
+      const d = sec.data;
+      const root = el(`<div>
+        <div class="card"><h3>Background photo</h3><div class="fields">${photoRow(d, page)}</div></div>
+        <div class="card"><div class="fields">
+          <div class="field wide"><label>Heading</label><input data-path="heading" data-pv="heading" value="${esc(d.heading)}"></div>
+        </div></div>
+        <h2>Paragraphs (drag to reorder)</h2>
+        <div class="list" id="items"></div>
+        <button class="add" data-add>+ Add a paragraph</button>
+        <div class="card" style="margin-top:14px"><div class="fields">
+          <div class="field wide"><label>Small heading above the buttons</label><input data-path="sub" data-pv="sub" value="${esc(d.sub)}"></div>
+        </div></div>
+      </div>`);
+      bindText(root, sec); bindPhoto(root, sec, page, 'bg');
+      itemList(root.querySelector('#items'), sec, d.paras, {
+        head: (p, i) => `<span class="name">Paragraph ${i + 1}</span><span class="meta" data-meta="${i}">${esc(p.slice(0, 90))}${p.length > 90 ? '…' : ''}</span>`,
+        form: (p, i) => `<div class="field wide"><label>Text</label><textarea data-path="paras.${i}" data-pv="paras.${i}" data-meta-for="${i}" rows="5">${esc(p)}</textarea></div>`,
+        blank: () => '', name: 'paragraph'
+      });
+      root.querySelector('[data-add]').onclick = () => { d.paras.push(''); state.sel = d.paras.length - 1; dirty(sec); render(); };
+      return root;
+    },
+    preview(sec) {
+      const d = sec.data;
+      return el(`<div><h2>Preview</h2><div class="pv-photo" style="background-image:url('${esc(imgSrc(d.bgPreview || d.bg))}')"><div class="panel">
+        <h2 data-pv="heading">${esc(d.heading)}</h2>
+        ${d.paras.map((p, i) => `<p data-pv="paras.${i}">${esc(p)}</p>`).join('')}
+        <h3 data-pv="sub">${esc(d.sub)}</h3>
+      </div></div><p class="legend">Roughly how the panel sits over the photo on a desktop; the buttons under the small heading aren't editable here.</p></div>`);
+    }
+  };
+
+  // ---------- quotes band (portfolio pages) ----------
+  SECTIONS.quotes = {
+    label: 'Quotes & photo',
+    parse(html) {
+      const sl = sectionSlice(html, '<section class="quotes"'); if (!sl) return null;
+      const root = frag(html.slice(sl[0], sl[1]));
+      const items = [...root.querySelectorAll('blockquote')].map(b => {
+        const cite = b.querySelector('cite'); let name = '', lines = [];
+        if (cite) {
+          const strong = cite.querySelector('strong'); name = strong?.textContent || ''; strong?.remove();
+          lines = cite.innerHTML.replace(/^\s*,\s*/, '').split(/<br\s*\/?>/i).map(x => decode(x).trim()).filter(Boolean);
+        }
+        return { quote: b.querySelector('p')?.textContent || '', name, lines };
+      });
+      return { items, bg: html.match(/\.quotes \.bg \{[^}]*url\("([^"]*)"\)/)?.[1] || '', bgPreview: '' };
+    },
+    apply(html, d) {
+      html = html.replace(/(\.quotes \.bg \{[^}]*url\(")([^"]*)("\))/, (m, a, u, c) => a + d.bg + c);
+      return replaceSlice(html, sectionSlice(html, '<section class="quotes"'), s => {
+        const po = s.indexOf('<div class="panel">'); if (po < 0) return s;
+        const o = po + '<div class="panel">'.length, c = s.lastIndexOf('</div>', s.lastIndexOf('</section>'));
+        const body = d.items.map(q => {
+          const cite = (q.name ? `<strong>${escText(q.name)}</strong>` : '') + (q.lines.length ? (q.name ? ', ' : '') + q.lines.map(escText).join('<br>') : '');
+          return `      <blockquote class="quote reveal">\n        <p>${escText(q.quote)}</p>\n        <cite>${cite}</cite>\n      </blockquote>`;
+        }).join('\n');
+        return s.slice(0, o) + '\n' + body + '\n    ' + s.slice(c);
+      });
+    },
+    images(d) { return [d.bg]; },
+    editor(sec, page) {
+      const d = sec.data;
+      const root = el(`<div>
+        <div class="card"><h3>Background photo</h3><div class="fields">${photoRow(d, page)}</div></div>
+        <h2>Quotes (drag to reorder)</h2>
+        <div class="list" id="items"></div>
+        <button class="add" data-add>+ Add a quote</button>
+        <p class="note" style="margin-top:12px">Type the quotation marks yourself (“ ”) so they match the others. Put each line of the attribution on its own line.</p>
+      </div>`);
+      bindText(root, sec); bindPhoto(root, sec, page, 'bg');
+      itemList(root.querySelector('#items'), sec, d.items, {
+        head: (q, i) => `<span class="name" data-name="${i}">${esc(q.name) || '<em>No name</em>'}</span><span class="meta" data-meta="${i}">${esc(q.quote.slice(0, 90))}${q.quote.length > 90 ? '…' : ''}</span>`,
+        form: (q, i) => `
+          <div class="field wide"><label>Quote</label><textarea data-path="items.${i}.quote" data-pv="items.${i}.quote" data-meta-for="${i}" rows="4">${esc(q.quote)}</textarea></div>
+          <div class="field wide"><label>Name</label><input data-path="items.${i}.name" data-pv="items.${i}.name" data-name-for="${i}" value="${esc(q.name)}"></div>
+          <div class="field wide"><label>Title / affiliation (one per line)</label><textarea data-lines="${i}" rows="2">${esc(q.lines.join('\n'))}</textarea></div>`,
+        name: 'quote'
+      });
+      root.querySelectorAll('[data-lines]').forEach(t => t.addEventListener('input', () => {
+        const i = +t.dataset.lines; d.items[i].lines = t.value.split('\n').map(x => x.trim()).filter(Boolean); dirty(sec);
+        const pv = $(`#previewWrap [data-pv="items.${i}.lines"]`); if (pv) pv.innerHTML = d.items[i].lines.map(esc).join('<br>');
+      }));
+      root.querySelector('[data-add]').onclick = () => { d.items.push({ quote: '', name: '', lines: [] }); state.sel = d.items.length - 1; dirty(sec); render(); };
+      return root;
+    },
+    preview(sec) {
+      const d = sec.data;
+      return el(`<div><h2>Preview</h2><div class="pv-photo" style="background-image:url('${esc(imgSrc(d.bgPreview || d.bg))}')"><div class="panel">
+        ${d.items.map((q, i) => `<blockquote><p data-pv="items.${i}.quote">${esc(q.quote)}</p><cite><strong data-pv="items.${i}.name">${esc(q.name)}</strong>${q.name && q.lines.length ? ', ' : ''}<span data-pv="items.${i}.lines">${q.lines.map(esc).join('<br>')}</span></cite></blockquote>`).join('')}
+      </div></div><p class="legend">On phones the photo sits above the quotes instead of behind them.</p></div>`);
+    }
+  };
+
+  // ---------- players (.work cards in .works-grid) ----------
+  const WG = '<div class="works-grid">';
+  function worksRange(html) {
+    const i = html.indexOf(WG); if (i < 0) return null;
+    const o = i + WG.length; const more = html.indexOf('<div class="more', o);
+    const c = html.lastIndexOf('</div>', more < 0 ? html.indexOf('</section>', o) : more);
+    return c < o ? null : [o, c];
+  }
+  const TYPE_LABEL = { soundcloud: 'SoundCloud', youtube: 'YouTube', bandcamp: 'Bandcamp' };
+  function playerHtml(w) {
+    const t = esc(w.title);
+    if (!w.src) return '<div class="player placeholder">player coming soon</div>';
+    if (w.type === 'youtube') return `<div class="player video-player"><iframe src="${escUrl(w.src)}" title="${t || 'YouTube video player'}" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>`;
+    if (w.type === 'bandcamp') return `<div class="player bandcamp"><iframe style="border: 0; width: 700px; height: 373px;" src="${escUrl(w.src)}" seamless loading="lazy" title="${t}">${w.inner || ''}</iframe></div>`;
+    return `<div class="player"><iframe width="100%" height="${esc(w.height || '166')}" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" loading="lazy" title="${t}" src="${escUrl(w.src)}"></iframe></div>`;
+  }
+  function parseEmbed(text) {
+    text = text.trim(); if (!text) return null;
+    if (/<iframe/i.test(text)) {
+      const src = text.match(/src="([^"]*)"/i)?.[1] || '';
+      const type = /bandcamp\.com/i.test(src) ? 'bandcamp' : /youtube(-nocookie)?\.com\/embed/i.test(src) ? 'youtube' : /soundcloud\.com/i.test(src) ? 'soundcloud' : null;
+      if (!type) return { error: 'That embed isn’t SoundCloud, YouTube or Bandcamp.' };
+      return {
+        type, src: type === 'soundcloud' ? src.replace(/color=%23[0-9a-f]{6}/i, 'color=%2386c0e8') : src,
+        title: decode(text.match(/title="([^"]*)"/i)?.[1] || ''), height: text.match(/height="?(\d+)/i)?.[1] || '166',
+        inner: type === 'bandcamp' ? (text.match(/<iframe[^>]*>([\s\S]*?)<\/iframe>/i)?.[1]?.trim() || '') : ''
+      };
+    }
+    let m;
+    if ((m = text.match(/^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/)))
+      return { type: 'youtube', src: `https://www.youtube.com/embed/${m[1]}`, title: 'YouTube video player', height: '', inner: '' };
+    if (/^https?:\/\/(?:www\.|on\.)?soundcloud\.com\//.test(text)) {
+      const url = text.split('?')[0];
+      return { type: 'soundcloud', src: `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%2386c0e8&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true`, title: '', height: /\/sets\//.test(url) ? '450' : '166', inner: '' };
+    }
+    if (/bandcamp\.com/i.test(text)) return { error: 'For Bandcamp, open the album page, choose Share / Embed, and paste the embed code — the link alone isn’t enough.' };
+    return { error: 'Paste an embed code (starts with <iframe) or a SoundCloud / YouTube link.' };
+  }
+  SECTIONS.works = {
+    label: 'Players',
+    parse(html) {
+      const r = worksRange(html); if (!r) return null;
+      const items = [...frag(html.slice(r[0], r[1])).querySelectorAll('.work')].map(w => {
+        const pl = w.querySelector('.player'), f = pl?.querySelector('iframe');
+        return {
+          heading: w.querySelector('h3')?.textContent || '', full: w.classList.contains('full'),
+          type: pl?.classList.contains('bandcamp') ? 'bandcamp' : pl?.classList.contains('video-player') ? 'youtube' : 'soundcloud',
+          src: f?.getAttribute('src') || '', title: f?.getAttribute('title') || '', height: f?.getAttribute('height') || '166', inner: (f?.textContent || '').trim()
+        };
+      });
+      return { items, twoCol: /\.works-grid \{[^}]*grid-template-columns: 1fr 1fr/.test(html) };
+    },
+    apply(html, d) {
+      const r = worksRange(html);
+      const lead = html.slice(r[0], r[1]).match(/^\s*<!--[\s\S]*?-->/)?.[0] || '';   // keep any note left at the top of the grid
+      const body = d.items.map(w => `        <div class="work${w.full ? ' full' : ''} reveal">\n          <h3>${escText(w.heading)}</h3>\n          ${playerHtml(w)}\n        </div>`).join('\n');
+      return html.slice(0, r[0]) + lead + '\n' + body + '\n      ' + html.slice(r[1]);
+    },
+    images() { return []; },
+    editor(sec) {
+      const d = sec.data;
+      const root = el(`<div>
+        <p class="note">To change a player, paste the embed code from SoundCloud / YouTube / Bandcamp (Share → Embed), or just a SoundCloud or YouTube link. The brand colour is applied to SoundCloud players automatically.</p>
+        <div class="list" id="items"></div>
+        <button class="add" data-add>+ Add a player</button>
+      </div>`);
+      itemList(root.querySelector('#items'), sec, d.items, {
+        head: (w, i) => `<span class="name" data-name="${i}">${esc(w.heading) || '<em>Untitled</em>'}${w.full ? ' <span class="badge">full width</span>' : ''}</span><span class="meta" data-meta="${i}">${w.src ? TYPE_LABEL[w.type] + (w.title ? ' · ' + esc(w.title) : '') : 'No player yet'}</span>`,
+        form: (w, i) => `
+          <div class="field wide"><label>Heading</label><input data-path="items.${i}.heading" data-pv="items.${i}.heading" data-name-for="${i}" value="${esc(w.heading)}" placeholder="orchestral / large ensemble"></div>
+          <div class="field wide"><label>Current player <span class="badge muted">${w.src ? TYPE_LABEL[w.type] : 'none'}</span></label><div class="hint">${esc(w.src) || 'Paste an embed below to add one.'}</div></div>
+          <div class="field wide"><label>Paste new embed code or link</label><textarea data-embed="${i}" rows="3" placeholder="&lt;iframe …&gt; or https://soundcloud.com/…"></textarea></div>
+          ${w.src ? `<div class="field wide"><label>Player title (accessibility label)</label><input data-path="items.${i}.title" value="${esc(w.title)}"></div>` : ''}
+          ${w.src && w.type === 'soundcloud' ? `<div class="field"><label>Player height</label><select data-height="${i}">${['166', '300', '450'].map(h => `<option value="${h}" ${w.height === h ? 'selected' : ''}>${h}px ${h === '166' ? '(single track)' : h === '450' ? '(playlist)' : ''}</option>`).join('')}</select></div>` : ''}
+          ${d.twoCol ? `<label class="check" style="padding-top:22px"><input type="checkbox" data-full="${i}" ${w.full ? 'checked' : ''}> Full width (spans both columns)</label>` : ''}`,
+        name: 'player'
+      });
+      bindText(root, sec);
+      root.querySelectorAll('[data-embed]').forEach(t => t.addEventListener('change', () => {
+        const r = parseEmbed(t.value); if (!r) return;
+        if (r.error) { toast(r.error); return; }
+        const i = +t.dataset.embed; Object.assign(d.items[i], r); if (!d.items[i].title && d.items[i].type === 'youtube') d.items[i].title = 'YouTube video player';
+        state.sel = i; dirty(sec); render(); toast(`${TYPE_LABEL[r.type]} player set.`);
+      }));
+      root.querySelectorAll('[data-height]').forEach(s => s.addEventListener('change', () => { const i = +s.dataset.height; d.items[i].height = s.value; dirty(sec); render(); }));
+      root.querySelectorAll('[data-full]').forEach(c => c.addEventListener('change', () => { const i = +c.dataset.full; d.items[i].full = c.checked; dirty(sec); render(); }));
+      root.querySelector('[data-add]').onclick = () => { d.items.push({ heading: '', full: false, type: 'soundcloud', src: '', title: '', height: '166', inner: '' }); state.sel = d.items.length - 1; dirty(sec); render(); };
+      return root;
+    },
+    preview(sec) {
+      const d = sec.data;
+      return el(`<div><h2>Preview</h2><div class="pv-works ${d.twoCol ? 'two' : ''}">
+        ${d.items.map((w, i) => `<div class="pv-work${w.full ? ' full' : ''}" data-i="${i}"><h3 data-pv="items.${i}.heading">${esc(w.heading)}</h3>${playerHtml(w)}</div>`).join('')}
+      </div><p class="legend">Live players. YouTube shows an error when this file is opened directly from disk (no referrer) but works on the published site.</p></div>`);
+    }
+  };
+
+  // ---------- videos (.clip cards in .video-grid on the sound design page) ----------
+  const VG = '<div class="video-grid">';
+  function videoRange(html) {
+    const i = html.indexOf(VG); if (i < 0) return null;
+    const o = i + VG.length; const secEnd = html.indexOf('</section>', o);
+    const wrapClose = html.lastIndexOf('</div>', secEnd); const c = html.lastIndexOf('</div>', wrapClose - 1);   // grid closes just before .wrap does
+    return c < o ? null : [o, c];
+  }
+  SECTIONS.videos = {
+    label: 'Videos',
+    parse(html) {
+      const r = videoRange(html); if (!r) return null;
+      const sl = sectionSlice(html, '<section class="videos">');
+      const heading = sl && sl[0] < r[0] ? html.slice(sl[0], r[0]).match(/<h2 class="reveal">([^<]*)<\/h2>/)?.[1] : null;
+      const items = [...frag(html.slice(r[0], r[1])).querySelectorAll('.clip')].map(c => {
+        const v = c.querySelector('video'); const srcs = [...c.querySelectorAll('source')].map(s => s.getAttribute('src') || '');
+        return { title: c.querySelector('h3')?.textContent || '', poster: v?.getAttribute('poster') || '', remote: srcs.find(isRemote) || '', local: srcs.find(s => s && !isRemote(s)) || '', posterPreview: '' };
+      });
+      return { items, heading: heading == null ? null : decode(heading) };
+    },
+    apply(html, d) {
+      const r = videoRange(html);
+      const body = d.items.map(v => {
+        const srcs = [v.remote, v.local].filter(Boolean).map(s => `            <source src="${escUrl(s)}" type="video/mp4">`).join('\n');
+        return `        <div class="clip reveal">\n          <video controls preload="none" playsinline poster="${escUrl(v.poster)}">\n${srcs}\n          </video>\n          <h3>${escText(v.title)}</h3>\n        </div>`;
+      }).join('\n');
+      html = html.slice(0, r[0]) + '\n' + body + '\n      ' + html.slice(r[1]);
+      if (d.heading != null) html = replaceSlice(html, sectionSlice(html, '<section class="videos">'), s => s.replace(/(<h2 class="reveal">)([^<]*)(<\/h2>)/, (m, a, t, c) => a + escText(d.heading) + c));
+      return html;
+    },
+    images(d) { return d.items.map(v => v.poster); },
+    editor(sec, page) {
+      const d = sec.data;
+      const root = el(`<div>
+        <p class="note">Each clip plays from the streaming link first and falls back to the local file in <code>videos/</code>. Upload an MP4 to add a local copy; the poster is the still shown before play.</p>
+        ${d.heading != null ? `<div class="card"><div class="fields"><div class="field wide"><label>Section heading</label><input data-path="heading" data-pv="heading" value="${esc(d.heading)}"></div></div></div>` : ''}
+        <h2>Clips (drag to reorder)</h2>
+        <div class="list" id="items"></div>
+        <button class="add" data-add>+ Add a clip</button>
+      </div>`);
+      itemList(root.querySelector('#items'), sec, d.items, {
+        thumb: v => v.posterPreview || imgSrc(v.poster),
+        head: (v, i) => `<span class="name" data-name="${i}">${esc(v.title) || '<em>Untitled</em>'}</span><span class="meta" data-meta="${i}">${v.remote && v.local ? 'Streaming + local file' : v.remote ? 'Streaming only' + (isRemote(v.remote) && /wixstatic/.test(v.remote) ? ' (Wix)' : '') : v.local ? 'Local file only' : 'No video yet'}</span>`,
+        form: (v, i) => `
+          <div class="imgrow">
+            <img src="${esc(v.posterPreview || imgSrc(v.poster))}" alt="" onerror="this.removeAttribute('src')">
+            <div class="field"><label>Poster image</label><input type="file" accept="image/*" data-poster="${i}"><div class="hint">${esc(v.poster || 'No poster yet')}</div></div>
+          </div>
+          <div class="field wide"><label>Title</label><input data-path="items.${i}.title" data-pv="items.${i}.title" data-name-for="${i}" value="${esc(v.title)}" placeholder="Wartorn: Unit Showcase"></div>
+          <div class="field wide"><label>Streaming link (MP4 URL)</label><input data-path="items.${i}.remote" data-meta-for="${i}" value="${esc(v.remote)}" placeholder="https://"></div>
+          <div class="field wide"><label>Local file</label><input type="file" accept="video/mp4,video/*" data-video="${i}"><div class="hint">${esc(v.local || 'No local copy yet')}</div></div>`,
+        name: 'clip'
+      });
+      bindText(root, sec);
+      root.querySelectorAll('[data-poster]').forEach(inp => inp.addEventListener('change', () => {
+        const file = inp.files[0]; if (!file) return; const v = d.items[+inp.dataset.poster];
+        const safe = safeName(file.name); page.files.set('images/posters/' + safe, new File([file], safe, { type: file.type }));
+        v.poster = 'images/posters/' + safe; if (v.posterPreview) URL.revokeObjectURL(v.posterPreview); v.posterPreview = URL.createObjectURL(file);
+        dirty(sec); render();
+      }));
+      root.querySelectorAll('[data-video]').forEach(inp => inp.addEventListener('change', () => {
+        const file = inp.files[0]; if (!file) return; const v = d.items[+inp.dataset.video];
+        const safe = safeName(file.name); page.files.set('videos/' + safe, new File([file], safe, { type: file.type }));
+        v.local = 'videos/' + safe; dirty(sec); render();
+        toast(`${safe} will be copied into videos/ when you save (${(file.size / 1048576).toFixed(0)} MB).`);
+      }));
+      root.querySelector('[data-add]').onclick = () => { d.items.push({ title: '', poster: '', remote: '', local: '', posterPreview: '' }); state.sel = d.items.length - 1; dirty(sec); render(); };
+      return root;
+    },
+    preview(sec) {
+      const d = sec.data;
+      return el(`<div><h2>Preview</h2>${d.heading != null ? `<p class="pv-h" data-pv="heading">${esc(d.heading)}</p>` : ''}<div class="pv-works two">
+        ${d.items.map((v, i) => `<div class="pv-work pv-clip"><video controls preload="none" playsinline poster="${esc(v.posterPreview || imgSrc(v.poster))}">${[v.remote, v.local].filter(Boolean).map(s => `<source src="${esc(s)}" type="video/mp4">`).join('')}</video><h3 data-pv="items.${i}.title">${esc(v.title)}</h3></div>`).join('')}
+      </div><p class="legend">Posters only until you press play. Local files play here only after they've been saved into videos/.</p></div>`);
+    }
+  };
+
+  // ---------- highlighted projects grid (home page tiles) ----------
   const GRID_OPEN = '<div class="grid" id="grid">';
   const GRID_CLOSE = '\n      </div>\n    </div>\n  </section>';
   const CATS = { game: 'Game', film: 'Film', installation: 'Installation' };
-
-  // ---------- parse / serialize ----------
-  function parse(html) {
-    const start = html.indexOf(GRID_OPEN);
-    const end = html.indexOf(GRID_CLOSE, start);
-    if (start < 0 || end < 0) throw new Error('Could not find the highlighted-projects grid in this file. Is it the site\u2019s index.html?');
-    const inner = html.slice(start + GRID_OPEN.length, end);
-    const doc = new DOMParser().parseFromString('<div>' + inner + '</div>', 'text/html');
-    return [...doc.querySelectorAll('a.tile')].map(a => {
-      const img = a.querySelector('img');
-      const roleText = (a.querySelector('.role')?.textContent || '').trim();
-      let role = roleText, company = '';
-      const i = roleText.indexOf(',');
-      if (i > -1) { role = roleText.slice(0, i).trim(); company = roleText.slice(i + 1).trim(); }
-      role = role.replace(/\s*\n\s*/g, ' ');
-      return {
-        title: (a.querySelector('.title')?.textContent || '').trim(),
-        role, company,
-        href: a.getAttribute('href') || '#',
-        newTab: a.getAttribute('target') === '_blank',
-        cat: a.dataset.cat || 'game',
-        featured: a.classList.contains('featured'),
-        img: img ? img.getAttribute('src') : '',
-        fallback: img ? (img.getAttribute('onerror') || '').match(/this\.src='([^']+)'/)?.[1] || '' : '',
-        file: null, preview: ''
+  SECTIONS.grid = {
+    label: 'Highlighted projects',
+    parse(html) {
+      const start = html.indexOf(GRID_OPEN); const end = html.indexOf(GRID_CLOSE, start);
+      if (start < 0 || end < 0) return null;
+      const doc = frag(html.slice(start + GRID_OPEN.length, end));
+      return { tiles: [...doc.querySelectorAll('a.tile')].map(a => {
+        const img = a.querySelector('img');
+        const roleText = (a.querySelector('.role')?.textContent || '').trim();
+        let role = roleText, company = ''; const i = roleText.indexOf(',');
+        if (i > -1) { role = roleText.slice(0, i).trim(); company = roleText.slice(i + 1).trim(); }
+        return {
+          title: (a.querySelector('.title')?.textContent || '').trim(), role: role.replace(/\s*\n\s*/g, ' '), company,
+          href: a.getAttribute('href') || '#', newTab: a.getAttribute('target') === '_blank', cat: a.dataset.cat || 'game',
+          featured: a.classList.contains('featured'), img: img ? img.getAttribute('src') : '',
+          fallback: img ? (img.getAttribute('onerror') || '').match(/this\.src='([^']+)'/)?.[1] || '' : '', preview: ''
+        };
+      }) };
+    },
+    apply(html, d) {
+      const start = html.indexOf(GRID_OPEN) + GRID_OPEN.length; const end = html.indexOf(GRID_CLOSE, start);
+      const body = d.tiles.map(t => {
+        const cls = 'tile' + (t.featured ? ' featured' : '') + ' reveal';
+        const ext = t.href && t.href !== '#' && /^https?:/i.test(t.href);
+        const target = (ext || t.newTab) ? ' target="_blank" rel="noopener"' : '';
+        const onerr = t.fallback ? `this.onerror=null;this.src='${esc(t.fallback)}'` : 'this.remove()';
+        const role = t.company ? `${t.role},\n${t.company}` : t.role;   // comma + line break, as on the live site
+        return `        <a class="${cls}" data-cat="${esc(t.cat)}" href="${esc(t.href || '#')}"${target}>\n          <img src="${esc(t.img)}" alt="" onerror="${onerr}">\n          <span class="arrow">↗</span>\n          <span class="title">${esc(t.title)}</span>\n          <span class="role">${esc(role)}</span>\n        </a>`;
+      }).join('\n');
+      return html.slice(0, start) + '\n' + body + html.slice(end);
+    },
+    images(d) { return d.tiles.flatMap(t => [t.img, t.fallback]); },
+    editor(sec, page) {
+      const d = sec.data;
+      const root = el(`<div><h2>Tiles (drag to reorder)</h2><div class="list" id="items"></div><button class="add" data-add>+ Add a tile</button></div>`);
+      const tileImg = t => t.preview || imgSrc(t.img);
+      itemList(root.querySelector('#items'), sec, d.tiles, {
+        thumb: t => tileImg(t),
+        head: (t, i) => `<span class="name" data-name="${i}">${esc(t.title) || '<em>Untitled</em>'}${t.featured ? ' <span class="badge">big</span>' : ''}</span><span class="meta" data-meta="${i}">${esc([t.role, t.company].filter(Boolean).join(', ')) || '&nbsp;'}</span>`,
+        form: (t, i) => `
+          <div class="imgrow">
+            <img src="${esc(tileImg(t))}" alt="" onerror="this.removeAttribute('src')">
+            <div class="field"><label>Photo</label><input type="file" accept="image/*" data-tilefile="${i}"><div class="hint">${esc(t.img || 'No image yet')}</div></div>
+          </div>
+          <div class="field wide"><label>Name of the game / project</label><input data-path="tiles.${i}.title" data-name-for="${i}" value="${esc(t.title)}" placeholder="Fortnite"></div>
+          <div class="field"><label>Role</label><input data-path="tiles.${i}.role" data-meta-for="${i}" value="${esc(t.role)}" placeholder="Sound Designer"></div>
+          <div class="field"><label>Company</label><input data-path="tiles.${i}.company" data-meta-for="${i}" value="${esc(t.company)}" placeholder="Epic Games"></div>
+          <div class="field wide"><label>Link (leave # for no link)</label><input data-path="tiles.${i}.href" value="${esc(t.href)}" placeholder="https://"></div>
+          <div class="field"><label>Category (for the filter chips)</label><select data-path="tiles.${i}.cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${t.cat === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+          <label class="check" style="padding-top:22px"><input type="checkbox" data-featured="${i}" ${t.featured ? 'checked' : ''}> Big tile (2×2)</label>`,
+        name: 'tile', onText: () => renderGridPreview(sec)
+      });
+      bindText(root, sec, () => renderGridPreview(sec));
+      root.querySelectorAll('[data-tilefile]').forEach(inp => inp.addEventListener('change', () => {
+        const file = inp.files[0]; if (!file) return; const t = d.tiles[+inp.dataset.tilefile];
+        const safe = safeName(file.name); page.files.set('images/' + safe, new File([file], safe, { type: file.type }));
+        t.img = 'images/' + safe; t.fallback = ''; if (t.preview) URL.revokeObjectURL(t.preview); t.preview = URL.createObjectURL(file);
+        dirty(sec); render();
+      }));
+      root.querySelectorAll('[data-featured]').forEach(c => c.addEventListener('change', () => { d.tiles[+c.dataset.featured].featured = c.checked; dirty(sec); render(); }));
+      root.querySelector('[data-add]').onclick = () => {
+        d.tiles.unshift({ title: '', role: '', company: '', href: '#', newTab: false, cat: 'game', featured: false, img: '', fallback: '', preview: '' });
+        state.sel = 0; dirty(sec); render(); document.querySelector('.row-item input[data-path$=".title"]')?.focus();
       };
+      return root;
+    },
+    preview(sec) {
+      const root = el(`<div><h2>Preview</h2><div class="grid" id="gridpv"></div><p class="legend">Click a tile to jump to its settings. Same four-column layout as the site; on phones the site shows two columns.</p></div>`);
+      renderGridPreview(sec, root.querySelector('#gridpv'));
+      return root;
+    }
+  };
+  function renderGridPreview(sec, g = $('#gridpv')) {
+    if (!g) return; g.innerHTML = '';
+    sec.data.tiles.forEach((t, i) => {
+      const d = document.createElement('div');
+      d.className = 'tile' + (t.featured ? ' featured' : '') + (i === state.sel ? ' selected' : '');
+      const src = t.preview || imgSrc(t.img);
+      d.innerHTML = `${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : ''}<span class="t">${esc(t.title)}</span><span class="r">${esc(t.company ? t.role + ',' : t.role)}${t.company ? '<br>' + esc(t.company) : ''}</span>`;
+      d.addEventListener('click', () => { state.sel = i; render(); document.querySelector(`.row-item[data-i="${i}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      g.appendChild(d);
     });
   }
-  const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  function serialize(tiles) {
-    return tiles.map(t => {
-      const cls = 'tile' + (t.featured ? ' featured' : '') + ' reveal';
-      const ext = t.href && t.href !== '#' && /^https?:/i.test(t.href);
-      const target = (ext || t.newTab) ? ' target="_blank" rel="noopener"' : '';
-      const onerr = t.fallback ? `this.onerror=null;this.src='${esc(t.fallback)}'` : 'this.remove()';
-      const role = t.company ? `${t.role},\n${t.company}` : t.role;   // comma + line break, as on the live site; role alone gets neither
-      return `        <a class="${cls}" data-cat="${esc(t.cat)}" href="${esc(t.href || '#')}"${target}>
-          <img src="${esc(t.img)}" alt="" onerror="${onerr}">
-          <span class="arrow">\u2197</span>
-          <span class="title">${esc(t.title)}</span>
-          <span class="role">${esc(role)}</span>
-        </a>`;
-    }).join('\n');
+
+  const SECTION_ORDER = ['reels', 'bio', 'grid', 'quotes', 'works', 'videos'];
+
+  // ============================================================ shared editor widgets
+  function setPath(obj, path, val) { const ks = path.split('.'); const last = ks.pop(); for (const k of ks) obj = obj[k]; obj[last] = val; }
+  // text inputs: data-path updates the data, data-pv patches the preview, data-name-for / data-meta-for patch the row header
+  function bindText(root, sec, extra) {
+    root.querySelectorAll('[data-path]').forEach(inp => inp.addEventListener(inp.tagName === 'SELECT' ? 'change' : 'input', () => {
+      setPath(sec.data, inp.dataset.path, inp.value); dirty(sec);
+      if (inp.dataset.pv) document.querySelectorAll(`#previewWrap [data-pv="${inp.dataset.pv}"]`).forEach(p => p.textContent = inp.value);
+      const row = inp.closest('.row-item');
+      if (row && (inp.dataset.nameFor != null || inp.dataset.metaFor != null)) {
+        const opts = row._opts, i = +row.dataset.i, item = row._items[i];
+        const tmp = el(`<div>${opts.head(item, i)}</div>`);
+        row.querySelector('.name').innerHTML = tmp.querySelector('.name').innerHTML;
+        row.querySelector('.meta').innerHTML = tmp.querySelector('.meta').innerHTML;
+      }
+      extra?.();
+    }));
   }
-  function buildHtml() {
-    const start = state.html.indexOf(GRID_OPEN) + GRID_OPEN.length;
-    const end = state.html.indexOf(GRID_CLOSE, start);
-    return state.html.slice(0, start) + '\n' + serialize(state.tiles) + state.html.slice(end);
+  function photoRow(d, page) {
+    const src = imgSrc(d.bgPreview || d.bg);
+    return `<div class="imgrow"><img src="${esc(src)}" alt="" onerror="this.removeAttribute('src')"><div class="field"><label>Photo</label><input type="file" accept="image/*" data-photo><div class="hint">${esc(d.bg || 'No photo yet')}${d.bg && isRemote(d.bg) ? ' <span class="badge muted">hosted on Wix</span>' : ''}</div></div></div>`;
+  }
+  function bindPhoto(root, sec, page, key) {
+    root.querySelector('[data-photo]')?.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const safe = safeName(file.name); page.files.set('images/' + safe, new File([file], safe, { type: file.type }));
+      sec.data[key] = 'images/' + safe; if (sec.data.bgPreview) URL.revokeObjectURL(sec.data.bgPreview); sec.data.bgPreview = URL.createObjectURL(file);
+      dirty(sec); render();
+    });
+  }
+  // generic reorderable list of items with an expandable form
+  function itemList(list, sec, items, opts) {
+    list.innerHTML = '';
+    items.forEach((item, i) => {
+      const row = document.createElement('div');
+      row.className = 'row-item' + (i === state.sel ? ' selected open' : ''); row.draggable = true; row.dataset.i = i; row._opts = opts; row._items = items;
+      const thumb = opts.thumb ? `<img class="thumb" src="${esc(opts.thumb(item))}" alt="" onerror="this.removeAttribute('src')">` : '';
+      row.innerHTML = `<div class="row-head ${opts.thumb ? '' : 'no-thumb'}">
+          <span class="handle" title="Drag to reorder">☰</span>${thumb}<div>${opts.head(item, i)}</div>
+          <div class="tools">
+            <button class="icon" data-act="up" title="Move up" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="icon" data-act="down" title="Move down" ${i === items.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="icon" data-act="toggle" title="Edit">✎</button>
+            <button class="icon danger" data-act="del" title="Remove">✕</button>
+          </div></div>
+        <div class="form">${opts.form(item, i)}</div>`;
+      const move = (from, to) => { if (to < 0 || to >= items.length || from === to) return; const [x] = items.splice(from, 1); items.splice(to, 0, x); state.sel = to; dirty(sec); render(); };
+      row.querySelector('.row-head').addEventListener('click', e => {
+        const act = e.target.closest('[data-act]')?.dataset.act;
+        if (act === 'up') move(i, i - 1); else if (act === 'down') move(i, i + 1);
+        else if (act === 'del') { if (confirm(`Remove this ${opts.name}?`)) { items.splice(i, 1); state.sel = -1; dirty(sec); render(); } }
+        else if (!e.target.closest('.handle')) { state.sel = i === state.sel ? -1 : i; render(); }
+      });
+      row.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i); row.classList.add('dragging'); });
+      row.addEventListener('dragend', () => row.classList.remove('dragging'));
+      row.addEventListener('dragover', e => { e.preventDefault(); const r = row.getBoundingClientRect(); const before = e.clientY < r.top + r.height / 2; row.classList.toggle('drop-before', before); row.classList.toggle('drop-after', !before); });
+      row.addEventListener('dragleave', () => row.classList.remove('drop-before', 'drop-after'));
+      row.addEventListener('drop', e => {
+        e.preventDefault(); row.classList.remove('drop-before', 'drop-after');
+        const from = +e.dataTransfer.getData('text/plain'); const r = row.getBoundingClientRect();
+        let to = i + (e.clientY < r.top + r.height / 2 ? 0 : 1); if (from < to) to--; move(from, to);
+      });
+      list.appendChild(row);
+    });
   }
 
-  // ---------- loading ----------
+  // ============================================================ loading
+  function parsePage(name, html) {
+    const sections = SECTION_ORDER.map(type => { try { const data = SECTIONS[type].parse(html); return data ? { type, data, dirty: false } : null; } catch (e) { console.warn(name, type, e); return null; } }).filter(Boolean);
+    return sections.length ? { name, html, sections, files: new Map() } : null;
+  }
   async function openFolder() {
-    if (!window.showDirectoryPicker) { toast('This browser can\u2019t open folders. Use \u201cLoad index.html\u201d instead.'); return; }
+    if (!window.showDirectoryPicker) { toast('This browser can’t open folders. Use “Load pages” instead.'); return; }
     try {
       const dir = await showDirectoryPicker({ mode: 'readwrite' });
-      const fh = await dir.getFileHandle('index.html');
-      const html = await (await fh.getFile()).text();
-      load(html, dir, 'index.html in the folder you picked');
-    } catch (e) {
-      if (e.name === 'AbortError') return;
-      if (e.name === 'NotFoundError') toast('That folder has no index.html. Pick the website folder itself.');
-      else toast(e.message);
-    }
+      const pages = [];
+      for await (const [name, h] of dir.entries()) {
+        if (h.kind !== 'file' || !/\.html$/i.test(name) || SKIP.test(name)) continue;
+        const p = parsePage(name, await (await h.getFile()).text()); if (p) pages.push(p);
+      }
+      if (!pages.length) { toast('No site pages found in that folder. Pick the website folder itself.'); return; }
+      await finishLoad(pages, dir, 'the folder you picked');
+    } catch (e) { if (e.name !== 'AbortError') toast(e.message); }
   }
-  async function loadFallback(file) {
-    if (!file) return;
-    try { load(await file.text(), null, file.name + ' (download mode)'); } catch (e) { toast(e.message); }
+  async function loadFallback(files) {
+    const pages = [];
+    for (const f of files) { try { const p = parsePage(f.name, await f.text()); if (p) pages.push(p); else toast(`${f.name} has nothing this tool can edit.`); } catch (e) { toast(e.message); } }
+    if (pages.length) await finishLoad(pages, null, 'download mode');
   }
-  function load(html, dir, label) {
-    try { state.tiles = parse(html); } catch (e) { toast(e.message); return; }
-    state.html = html; state.dir = dir; state.dirty = false; state.selected = -1;
-    $('#welcome').classList.add('hidden'); $('#editor').classList.remove('hidden'); $('#previewWrap').classList.remove('hidden');
-    $('#status').textContent = `Loaded ${state.tiles.length} tiles from ${label}.`;
-    $('#saveBtn').disabled = false;
+  async function finishLoad(pages, dir, label) {
+    pages.sort((a, b) => (PAGE_ORDER.indexOf(a.name) + 1 || 99) - (PAGE_ORDER.indexOf(b.name) + 1 || 99) || a.name.localeCompare(b.name));
+    state.dir = dir; state.pages = pages; state.cur = { p: 0, s: 0 }; state.sel = -1;
+    for (const u of state.imgCache.values()) if (u.startsWith('blob:')) URL.revokeObjectURL(u);
+    state.imgCache.clear();
+    await Promise.all(pages.flatMap(p => p.sections.flatMap(s => SECTIONS[s.type].images(s.data))).filter(Boolean).map(cacheImage));
+    $('#welcome').classList.add('hidden'); ['#nav', '#editor', '#previewWrap'].forEach(s => $(s).classList.remove('hidden'));
+    state.loadLabel = label; $('#saveBtn').disabled = false;
     render();
   }
 
-  // ---------- saving ----------
+  // ============================================================ saving
+  function dirty(sec) { sec.dirty = true; updateStatus(); }
+  const dirtyPages = () => state.pages.filter(p => p.sections.some(s => s.dirty));
   async function save() {
-    const html = buildHtml();
+    const pages = dirtyPages(); if (!pages.length) { toast('Nothing to save.'); return; }
     try {
-      if (state.dir) {
-        // copy any newly chosen photos into images/
-        const imagesDir = await state.dir.getDirectoryHandle('images', { create: true });
-        for (const t of state.tiles) {
-          if (!t.file) continue;
-          const fh = await imagesDir.getFileHandle(t.file.name, { create: true });
-          const w = await fh.createWritable(); await w.write(t.file); await w.close();
-          t.file = null;
+      for (const p of pages) {
+        let html = p.html;
+        for (const s of p.sections) if (s.dirty) html = SECTIONS[s.type].apply(html, s.data);
+        if (state.dir) {
+          for (const [path, file] of p.files) {   // keys are paths like images/x.jpg, images/posters/x.jpg, videos/x.mp4
+            let d = state.dir; const parts = path.split('/'); const fn = parts.pop();
+            for (const part of parts) d = await d.getDirectoryHandle(part, { create: true });
+            const fh = await d.getFileHandle(fn, { create: true }); const w = await fh.createWritable(); await w.write(file); await w.close();
+          }
+          p.files.clear();
+          const fh = await state.dir.getFileHandle(p.name); const w = await fh.createWritable(); await w.write(html); await w.close();
+        } else {
+          const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' })); a.download = p.name; a.click();
         }
-        const fh = await state.dir.getFileHandle('index.html');
-        const w = await fh.createWritable(); await w.write(html); await w.close();
-        state.html = html; state.dirty = false;
-        toast('Saved index.html. Commit and push when you\u2019re ready.');
-      } else {
-        const blob = new Blob([html], { type: 'text/html' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'index.html'; a.click();
-        const pending = state.tiles.filter(t => t.file).map(t => t.file.name);
-        toast(pending.length ? `Downloaded index.html. Also copy into images/: ${pending.join(', ')}` : 'Downloaded index.html. Replace the one in your website folder.');
-        state.html = html; state.dirty = false;
+        p.html = html; p.sections.forEach(s => s.dirty = false);
       }
-      renderPreview();
+      const names = pages.map(p => p.name).join(', ');
+      if (state.dir) toast(`Saved ${names}. Commit and push when you’re ready.`);
+      else { const pending = pages.flatMap(p => [...p.files.keys()]); toast(pending.length ? `Downloaded ${names}. Also copy these files into the folder: ${pending.join(', ')}` : `Downloaded ${names}. Replace the copies in your website folder.`); }
+      render();
     } catch (e) { toast('Save failed: ' + e.message); }
   }
 
-  // ---------- rendering ----------
-  function imgSrc(t) {
-    if (t.preview) return t.preview;
-    if (!t.img) return '';
-    if (/^https?:/i.test(t.img)) return t.img;
-    return '../' + t.img;   // tool lives in tools/, images live in ../images
-  }
-  function render() { renderList(); renderPreview(); }
-
-  function renderList() {
-    const list = $('#list'); list.innerHTML = '';
-    state.tiles.forEach((t, i) => {
-      const el = document.createElement('div');
-      el.className = 'row-tile' + (i === state.selected ? ' selected open' : '');
-      el.draggable = true; el.dataset.i = i;
-      const meta = [t.role, t.company].filter(Boolean).join(', ');
-      el.innerHTML = `
-        <div class="row-head">
-          <span class="handle" title="Drag to reorder">\u2630</span>
-          <img class="thumb" src="${esc(imgSrc(t))}" alt="" onerror="this.removeAttribute('src')">
-          <div><span class="name">${esc(t.title) || '<em>Untitled</em>'}${t.featured ? '<span class="big-dot">big</span>' : ''}</span><span class="meta">${esc(meta) || '&nbsp;'}</span></div>
-          <div class="tools">
-            <button class="icon" data-act="up" title="Move up" ${i === 0 ? 'disabled' : ''}>\u2191</button>
-            <button class="icon" data-act="down" title="Move down" ${i === state.tiles.length - 1 ? 'disabled' : ''}>\u2193</button>
-            <button class="icon" data-act="toggle" title="Edit">\u270E</button>
-            <button class="icon danger" data-act="del" title="Remove tile">\u2715</button>
-          </div>
-        </div>
-        <div class="form">
-          <div class="imgrow">
-            <img src="${esc(imgSrc(t))}" alt="" onerror="this.removeAttribute('src')">
-            <div class="field">
-              <label>Photo</label>
-              <input type="file" accept="image/*" data-f="file">
-              <div class="hint">${t.file ? 'New: images/' + esc(t.file.name) : esc(t.img || 'No image yet')}</div>
-            </div>
-          </div>
-          <div class="field wide"><label>Name of the game / project</label><input data-f="title" value="${esc(t.title)}" placeholder="Fortnite"></div>
-          <div class="field"><label>Role</label><input data-f="role" value="${esc(t.role)}" placeholder="Sound Designer"></div>
-          <div class="field"><label>Company</label><input data-f="company" value="${esc(t.company)}" placeholder="Epic Games"></div>
-          <div class="field wide"><label>Link (leave # for no link)</label><input data-f="href" value="${esc(t.href)}" placeholder="https://"></div>
-          <div class="field"><label>Category (for the filter chips)</label>
-            <select data-f="cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${t.cat === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
-          </div>
-          <label class="check"><input type="checkbox" data-f="featured" ${t.featured ? 'checked' : ''}> Big tile (2\u00d72)</label>
-        </div>`;
-      // field changes
-      el.querySelectorAll('[data-f]').forEach(inp => inp.addEventListener('input', e => onField(i, inp, e)));
-      el.querySelectorAll('[data-f="cat"]').forEach(inp => inp.addEventListener('change', e => onField(i, inp, e)));
-      el.querySelector('.row-head').addEventListener('click', e => {
-        const act = e.target.closest('[data-act]')?.dataset.act;
-        if (act === 'up') move(i, i - 1); else if (act === 'down') move(i, i + 1);
-        else if (act === 'del') { if (confirm(`Remove \u201c${t.title || 'this tile'}\u201d?`)) { state.tiles.splice(i, 1); state.selected = -1; markDirty(); render(); } }
-        else if (!e.target.closest('.handle')) select(i === state.selected ? -1 : i);
+  // ============================================================ rendering
+  function render() { renderNav(); renderEditor(); renderPreview(); updateStatus(); }
+  function renderNav() {
+    const nav = $('#nav'); nav.innerHTML = '';
+    state.pages.forEach((p, pi) => {
+      const g = el(`<div><div class="pg-name">${esc(pageLabel(p))}</div></div>`);
+      p.sections.forEach((s, si) => {
+        const b = el(`<button class="sec ${pi === state.cur.p && si === state.cur.s ? 'on' : ''}"><span>${SECTIONS[s.type].label}</span>${s.dirty ? '<span class="dot" title="Unsaved changes"></span>' : ''}</button>`);
+        b.onclick = () => { state.cur = { p: pi, s: si }; state.sel = -1; render(); window.scrollTo({ top: 0 }); };
+        g.appendChild(b);
       });
-      // drag & drop
-      el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', i); el.classList.add('dragging'); });
-      el.addEventListener('dragend', () => el.classList.remove('dragging'));
-      el.addEventListener('dragover', e => { e.preventDefault(); const r = el.getBoundingClientRect(); const before = e.clientY < r.top + r.height / 2; el.classList.toggle('drop-before', before); el.classList.toggle('drop-after', !before); });
-      el.addEventListener('dragleave', () => el.classList.remove('drop-before', 'drop-after'));
-      el.addEventListener('drop', e => {
-        e.preventDefault(); el.classList.remove('drop-before', 'drop-after');
-        const from = +e.dataTransfer.getData('text/plain'); const r = el.getBoundingClientRect();
-        let to = i + (e.clientY < r.top + r.height / 2 ? 0 : 1); if (from < to) to--; move(from, to);
-      });
-      list.appendChild(el);
+      nav.appendChild(g);
     });
   }
-
+  function renderEditor() {
+    const page = curPage(), sec = curSec(); const ed = $('#editor'); ed.innerHTML = '';
+    if (!sec) return;
+    ed.appendChild(el(`<div class="editor-head"><h2>${SECTIONS[sec.type].label}</h2><span class="crumb">${esc(pageLabel(page))} · ${esc(page.name)}</span></div>`));
+    ed.appendChild(SECTIONS[sec.type].editor(sec, page));
+  }
   function renderPreview() {
-    const g = $('#preview'); g.innerHTML = '';
-    state.tiles.forEach((t, i) => {
-      const d = document.createElement('div');
-      d.className = 'tile' + (t.featured ? ' featured' : '') + (i === state.selected ? ' selected' : '');
-      const src = imgSrc(t);
-      d.innerHTML = `${src ? `<img src="${esc(src)}" alt="" onerror="this.remove()">` : ''}<span class="t">${esc(t.title)}</span><span class="r">${esc(t.company ? t.role + ',' : t.role)}${t.company ? '<br>' + esc(t.company) : ''}</span>`;
-      d.addEventListener('click', () => { select(i); document.querySelector(`.row-tile[data-i="${i}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
-      g.appendChild(d);
-    });
-    $('#saveBtn').textContent = state.dirty ? 'Save changes \u2022' : 'Save changes';
+    const sec = curSec(); const pv = $('#previewWrap'); pv.innerHTML = '';
+    if (!sec) return; const node = SECTIONS[sec.type].preview(sec, curPage()); if (node) pv.appendChild(node);
   }
+  function updateStatus() {
+    const n = dirtyPages().length;
+    $('#status').textContent = `${state.pages.length} page${state.pages.length === 1 ? '' : 's'} loaded from ${state.loadLabel}` + (n ? ` · ${n} with unsaved changes` : '');
+    $('#saveBtn').textContent = n ? 'Save changes •' : 'Save changes';
+    if (n) { const b = document.querySelector('#nav .sec.on'); if (b && !b.querySelector('.dot') && curSec()?.dirty) b.appendChild(el('<span class="dot" title="Unsaved changes"></span>')); }
+  }
+  let toastT; function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 5000); }
 
-  // ---------- actions ----------
-  function select(i) { state.selected = i; render(); }
-  function move(from, to) {
-    if (to < 0 || to >= state.tiles.length || from === to) return;
-    const [t] = state.tiles.splice(from, 1); state.tiles.splice(to, 0, t);
-    state.selected = to; markDirty(); render();
-  }
-  function markDirty() { state.dirty = true; }
-  function onField(i, inp, e) {
-    const t = state.tiles[i], f = inp.dataset.f;
-    if (f === 'file') {
-      const file = inp.files[0]; if (!file) return;
-      const safe = file.name.replace(/\s+/g, '-').replace(/[^A-Za-z0-9._-]/g, '');
-      t.file = new File([file], safe, { type: file.type });
-      t.img = 'images/' + safe; t.fallback = '';
-      if (t.preview) URL.revokeObjectURL(t.preview);
-      t.preview = URL.createObjectURL(file);
-      markDirty(); render(); return;
-    }
-    if (f === 'featured') t.featured = inp.checked; else t[f] = inp.value;
-    markDirty();
-    // light refresh: preview + row header only, keep focus in the field
-    renderPreview();
-    const row = inp.closest('.row-tile');
-    row.querySelector('.name').innerHTML = `${esc(t.title) || '<em>Untitled</em>'}${t.featured ? '<span class="big-dot">big</span>' : ''}`;
-    row.querySelector('.meta').textContent = [t.role, t.company].filter(Boolean).join(', ') || '\u00a0';
-  }
-  function addTile() {
-    state.tiles.unshift({ title: '', role: '', company: '', href: '#', newTab: false, cat: 'game', featured: false, img: '', fallback: '', file: null, preview: '' });
-    state.selected = 0; markDirty(); render();
-    document.querySelector('.row-tile input[data-f="title"]')?.focus();
-  }
-  let toastT; function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4500); }
-
-  // ---------- wire up ----------
+  // ============================================================ wire up
   $('#openBtn').onclick = $('#openBtn2').onclick = openFolder;
-  $('#fallbackInput').onchange = e => loadFallback(e.target.files[0]);
-  $('#fallbackInput2').onchange = e => loadFallback(e.target.files[0]);
+  $('#fallbackInput').onchange = e => loadFallback([...e.target.files]);
+  $('#fallbackInput2').onchange = e => loadFallback([...e.target.files]);
   $('#saveBtn').onclick = save;
-  $('#addBtn').onclick = addTile;
-  addEventListener('beforeunload', e => { if (state.dirty) { e.preventDefault(); e.returnValue = ''; } });
+  addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); if (!$('#saveBtn').disabled) save(); } });
+  addEventListener('beforeunload', e => { if (dirtyPages().length) { e.preventDefault(); e.returnValue = ''; } });
   if (!window.showDirectoryPicker) { $('#openBtn').classList.add('hidden'); $('#openBtn2').classList.add('hidden'); }
+  if (location.hash === '#debug') window.editor = { state, SECTIONS, render, loadFallback };
 })();
 </script>
 </body>
