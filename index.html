@@ -8,122 +8,220 @@
 <meta property="og:title" content="Mason Victoria Sound | Game Audio, Sound Design, Composition">
 <meta property="og:description" content="Mason Victoria is a composer and sound designer for video games, film, television and live ensemble.">
 <meta property="og:image" content="images/control-lab.jpg">
+<style>
+  /* Brandon Grotesque — self-hosted in /fonts */
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 500; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Medium.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 900; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Black.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 900; font-style: italic; font-display: swap; src: url("fonts/BrandonGrotesque-BlackItalic.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 700; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 700; font-style: italic; font-display: swap; src: url("fonts/BrandonGrotesque-BoldItalic.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 300; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Light.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 300; font-style: italic; font-display: swap; src: url("fonts/BrandonGrotesque-LightItalic.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 500; font-style: italic; font-display: swap; src: url("fonts/BrandonGrotesque-MediumItalic.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 400; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Regular.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 400; font-style: italic; font-display: swap; src: url("fonts/BrandonGrotesque-RegularItalic.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 100; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Thin.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque"; font-weight: 100; font-style: italic; font-display: swap; src: url("fonts/BrandonGrotesque-ThinItalic.woff2") format("woff2"); }
+  @font-face { font-family: "Brandon Grotesque Full"; font-weight: 100 900; font-style: normal; font-display: swap; src: url("fonts/BrandonGrotesque-Medium.woff2") format("woff2"); }
+</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
   :root {
-    --navy: #2d3b55;
-    --rule: #b9c1cc;
-    --sky: #86c0e8;
-    --black: #000;
+    --navy: #243147;
+    --ink: #0b0f16;
+    --paper: #f6f7f9;
     --white: #fff;
+    --sky: #86c0e8;
+    --sky-deep: #4a9ad6;
+    --rule: rgba(36, 49, 71, .18);
     --content: 1180px;
-    --font: "Nunito Sans", "Avenir Next", "Avenir", system-ui, sans-serif;
+    --sans: "Brandon Grotesque", "Brandon Grotesque Full", "Quicksand", "Avenir Next", system-ui, sans-serif;
+    --body: "Quicksand", "Avenir Next", system-ui, sans-serif;
+    --ease: cubic-bezier(.22, 1, .36, 1);
   }
 
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: var(--font); color: var(--navy); background: var(--white); -webkit-font-smoothing: antialiased; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; font-family: var(--body); font-weight: 500; color: var(--navy); background: var(--white);
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
   a { color: inherit; text-decoration: none; }
-  a:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--sky-deep); outline-offset: 3px; border-radius: 4px; }
   img { display: block; max-width: 100%; }
   h1, h2, h3, p { margin: 0; }
+  .hello h2, .projects h2 { font-family: var(--sans); }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   .wrap { width: min(var(--content), 100% - 3rem); margin-inline: auto; }
 
-  /* ---------- header ---------- */
-  .site-header { padding: 22px 0 0; background: var(--white); }
-  .site-header .brand { font-size: 36px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; line-height: 1; }
-  .site-header .tagline { margin-top: 8px; font-size: 20px; font-weight: 400; letter-spacing: .02em; }
-  .site-header .tagline span { margin: 0 .35em; }
+  /* ---------- scroll progress ---------- */
+  .progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 60; transform-origin: left; transform: scaleX(0); background: var(--sky-deep); pointer-events: none; }
 
-  .nav { margin-top: 18px; }
-  .nav ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-  .nav li { border-top: 2px solid var(--rule); text-align: center; padding: 10px 0 14px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; }
-  .nav li.active { border-top-color: var(--navy); }
+  /* ---------- header ---------- */
+  .site-header {
+    position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.86); backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent; transition: border-color .3s, padding .3s;
+  }
+  .site-header .wrap { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding: 22px 0 14px; transition: padding .3s var(--ease); }
+  .site-header.compact { border-bottom-color: var(--rule); }
+  .site-header.compact .wrap { padding: 12px 0 10px; }
+
+  .brand { line-height: 1; }
+  .brand .name { display: block; font-size: 34px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; transition: font-size .3s var(--ease); }
+  .brand .tag { display: block; margin-top: 8px; font-size: 17px; font-weight: 300; letter-spacing: .02em; transition: opacity .3s, margin .3s, max-height .3s; max-height: 2em; }
+  .brand .tag span { color: var(--sky-deep); margin: 0 .4em; }
+  .site-header.compact .brand .name { font-size: 22px; }
+  .site-header.compact .brand .tag { opacity: 0; max-height: 0; margin-top: 0; overflow: hidden; }
+
+  .nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2.25rem; }
+  .nav li { position: relative; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; padding-bottom: 6px; }
   .nav a, .nav summary { display: block; cursor: pointer; }
+  .nav li > a::after, .nav summary::after {
+    content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--navy);
+    transform: scaleX(0); transform-origin: right; transition: transform .35s var(--ease);
+  }
+  .nav li.active > a::after, .nav li:hover > a::after, .nav details:hover summary::after, .nav details[open] summary::after { transform: scaleX(1); transform-origin: left; }
   .nav summary { list-style: none; }
   .nav summary::-webkit-details-marker { display: none; }
-  .nav details { position: relative; }
   .nav details ul {
-    position: absolute; top: 100%; left: 50%; transform: translateX(-50%); z-index: 20;
-    display: block; min-width: 200px; background: var(--white); border: 1px solid var(--rule); padding: 6px 0;
+    position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 20;
+    display: block; min-width: 200px; background: var(--white); border: 1px solid var(--rule); border-radius: 10px; padding: 6px 0;
+    box-shadow: 0 18px 40px -20px rgba(11,15,22,.35);
+    animation: drop .25s var(--ease);
   }
-  .nav details ul li { border: 0; padding: 0; text-transform: none; letter-spacing: 0; font-size: 15px; text-align: left; }
+  @keyframes drop { from { opacity: 0; transform: translate(-50%, -6px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  .nav details ul li { padding: 0; text-transform: none; letter-spacing: 0; font-size: 16px; font-weight: 400; }
   .nav details ul a { padding: 9px 18px; }
-  .nav details ul a:hover { background: #eef2f6; }
+  .nav details ul a::after { display: none; }
+  .nav details ul a:hover { background: var(--paper); }
 
-  /* ---------- reels (black) ---------- */
-  .reels { background: var(--black); color: var(--white); padding: 40px 0 55px; }
-  .video { aspect-ratio: 16 / 9; background: #0e0e0e; }
+  .menu-btn { display: none; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; }
+
+  /* ---------- reels (kept as original) ---------- */
+  .reels { background: var(--ink); color: var(--white); padding: 40px 0 60px; }
+  .video { aspect-ratio: 16 / 9; background: #0e0e0e; border-radius: 12px; overflow: hidden; }
   .video iframe { width: 100%; height: 100%; border: 0; display: block; }
-  .video.placeholder { display: grid; place-items: center; color: #8a8a8a; font-size: 15px; text-align: center; padding: 1rem; }
   .btn {
-    display: inline-block; padding: 12px 30px; border: 1px solid var(--sky); border-radius: 10px;
-    color: var(--white); font-size: 19px; font-weight: 400; background: transparent; transition: background .15s, color .15s;
+    display: inline-block; padding: 12px 30px; border: 1px solid var(--sky); border-radius: 999px;
+    color: var(--white); font-size: 18px; font-weight: 400; letter-spacing: .02em; position: relative; overflow: hidden; isolation: isolate;
+    transition: color .3s var(--ease);
   }
-  .btn:hover { background: var(--sky); color: var(--black); }
-  .btn-row { text-align: center; margin: 38px 0 42px; }
+  .btn::before { content: ""; position: absolute; inset: 0; background: var(--sky); transform: translateY(101%); transition: transform .35s var(--ease); z-index: -1; }
+  .btn:hover { color: var(--ink); }
+  .btn:hover::before { transform: translateY(0); }
+  .btn-row { text-align: center; margin: 34px 0 44px; }
   .reel-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-  .reel-pair .btn-row { margin: 38px 0 0; }
+  .reel-pair .btn-row { margin: 34px 0 0; }
 
-  /* ---------- hello (photo + overlay) ---------- */
-  .hello {
-    position: relative; min-height: 940px; color: var(--white);
-    background: #111 url("images/control-lab.jpg") center / cover no-repeat;
-    display: grid; grid-template-columns: 1fr 1fr;
-  }
-  .hello::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+  /* ---------- hello ---------- */
+  .hello { position: relative; min-height: 100svh; color: var(--white); display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; background: var(--ink); }
+  .hello .bg { position: absolute; inset: -12% 0; background: url("images/control-lab.jpg") center / cover no-repeat; will-change: transform; }
+  .hello::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,22,.35), rgba(11,15,22,.75)); }
   .hello .panel {
-    grid-column: 2; position: relative; background: rgba(0,0,0,.6);
-    display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-    padding: 70px 10% 70px;
+    grid-column: 2; position: relative; backdrop-filter: blur(6px); background: rgba(11,15,22,.45);
+    border-left: 1px solid rgba(255,255,255,.08);
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 90px 9% 90px 8%;
   }
-  .hello h2 { font-size: 36px; font-weight: 600; letter-spacing: .04em; margin-bottom: 36px; }
-  .hello p { font-size: 17px; line-height: 1.7; margin-bottom: 36px; max-width: 54ch; }
-  .hello h3 { font-size: 30px; font-weight: 600; letter-spacing: .04em; margin: 8px 0 44px; }
-  .hello .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 28px; width: 100%; max-width: 580px; }
-  .hello .btn { width: 100%; text-align: center; }
+  .hello h2 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; margin-bottom: 28px; }
+  .hello p { font-size: 17px; font-weight: 500; line-height: 1.75; margin-bottom: 22px; max-width: 52ch; }
+  .hello h3 { margin: 26px 0 20px; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; font-weight: 500; color: var(--sky); }
+  .hello .btn-grid { display: flex; flex-wrap: wrap; gap: 12px 14px; }
 
   /* ---------- projects ---------- */
-  .projects { padding: 48px 0 70px; text-align: center; }
-  .projects h2 { font-size: 36px; font-weight: 600; letter-spacing: .04em; }
-  .projects .sub { font-style: italic; font-size: 20px; margin: 14px 0 40px; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 36px; text-align: left; }
+  .projects { padding: 110px 0 120px; background: var(--paper); }
+  .projects .head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 40px; }
+  .projects h2 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; }
+  .projects h2 .sub { display: block; font-family: var(--body); font-size: .4em; font-weight: 400; font-style: italic; color: var(--ink); margin-top: 12px; letter-spacing: 0; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 9px 18px; border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; transition: all .25s var(--ease); }
+  .chip:hover { border-color: var(--navy); }
+  .chip[aria-pressed="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; perspective: 1200px; }
   .tile {
-    position: relative; aspect-ratio: 1; overflow: hidden; background: #1f2630; color: var(--white);
-    display: flex; flex-direction: column; justify-content: flex-end; padding: 36px 36px 38px;
+    position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 14px; background: #1f2630; color: var(--white);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; transform-style: preserve-3d;
+    transition: transform .5s var(--ease), box-shadow .5s var(--ease), opacity .45s var(--ease);
+    box-shadow: 0 10px 30px -18px rgba(11,15,22,.5);
   }
-  .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-  .tile::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(0,0,0,.45) 0%, rgba(0,0,0,.65) 100%); transition: background .2s; }
-  .tile:hover::before { background: linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.5) 100%); }
-  .tile .title, .tile .role { position: relative; z-index: 2; }
-  .tile .title { font-size: 36px; font-weight: 800; line-height: 1.1; margin-bottom: 10px; }
-  .tile .role { font-size: 15px; line-height: 1.35; white-space: pre-line; }
+  .tile.featured { grid-column: span 2; grid-row: span 2; }
+  .tile.featured .title { font-size: clamp(36px, 4vw, 56px); }
+  .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform .9s var(--ease); }
+  .tile::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(11,15,22,.85) 0%, rgba(11,15,22,.35) 50%, rgba(11,15,22,.1) 100%); transition: opacity .5s; }
+  .tile .title, .tile .role, .tile .arrow { position: relative; z-index: 2; }
+  .tile .title { font-size: 30px; font-weight: 700; line-height: 1.05; margin-bottom: 8px; transition: transform .5s var(--ease); }
+  .tile .role { font-size: 14px; font-weight: 500; line-height: 1.4; white-space: pre-line; opacity: .9; transform: translateY(6px); transition: transform .5s var(--ease), opacity .5s; }
+  .tile .arrow { position: absolute; top: 22px; right: 22px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.5); display: grid; place-items: center; font-size: 18px; opacity: 0; transform: translate(-6px, 6px); transition: all .45s var(--ease); }
+  .tile:hover { box-shadow: 0 30px 60px -24px rgba(11,15,22,.6); }
+  .tile:hover img { transform: scale(1.08); }
+  .tile:hover .arrow { opacity: 1; transform: translate(0, 0); }
+  .tile.hidden { display: none; }
+  .tile.pop { animation: pop .5s var(--ease) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
+
+  /* ---------- footer ---------- */
+  .site-footer { background: var(--ink); color: rgba(255,255,255,.7); padding: 40px 0 36px; }
+  .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; }
+  .site-footer .name-line { color: var(--white); font-size: 20px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
+  .site-footer a:hover { color: var(--white); }
+  .site-footer small { display: block; margin-top: 10px; font-size: 15px; font-weight: 300; }
+  .site-footer .tag span { color: var(--sky); margin: 0 .4em; }
+  .footer-actions { display: flex; align-items: center; gap: 12px; }
+  .social { width: 46px; height: 46px; border: 1px solid var(--sky); border-radius: 50%; display: grid; place-items: center; color: var(--white); font-size: 18px; transition: background .3s var(--ease), color .3s var(--ease); }
+  .social:hover { background: var(--sky); color: var(--ink); }
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  .grid .reveal { transition-delay: calc(var(--i, 0) * 60ms); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .tile, .tile img, .btn::before { transition: none; }
+    .hello .bg { transform: none !important; }
+  }
 
   /* ---------- responsive ---------- */
   @media (max-width: 960px) {
     .grid { grid-template-columns: repeat(2, 1fr); }
     .hello { grid-template-columns: 1fr; min-height: 0; }
-    .hello .panel { grid-column: 1; }
+    .hello .panel { grid-column: 1; border-left: 0; padding: 70px 8%; }
+  }
+  @media (max-width: 760px) {
+    .menu-btn { display: block; }
+    .nav { display: none; position: absolute; left: 0; right: 0; top: 100%; background: var(--white); border-bottom: 1px solid var(--rule); padding: 1rem 1.5rem 1.5rem; }
+    .nav.open { display: block; }
+    .nav ul { flex-direction: column; gap: 1rem; }
+    .nav details ul { position: static; transform: none; border: 0; box-shadow: none; padding: .5rem 0 0 1rem; animation: none; }
   }
   @media (max-width: 640px) {
-    .site-header .brand { font-size: 26px; letter-spacing: .16em; }
-    .site-header .tagline { font-size: 16px; }
-    .nav ul { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .brand .name { font-size: 24px; letter-spacing: .14em; }
+    .brand .tag { font-size: 14px; }
     .reel-pair { grid-template-columns: 1fr; }
     .grid { grid-template-columns: 1fr; }
-    .tile .title { font-size: 30px; }
-    .hello .btn-grid { grid-template-columns: 1fr; }
+    .tile.featured { grid-column: span 1; grid-row: span 1; }
+    .tile .title { font-size: 28px; }
+    .projects { padding: 70px 0 80px; }
   }
 </style>
 </head>
 <body>
 
-<header class="site-header">
+<div class="progress" id="progress"></div>
+
+<header class="site-header" id="header">
   <div class="wrap">
-    <h1 class="brand">Mason Victoria</h1>
-    <p class="tagline">sound design<span>|</span>composition<span>|</span>implementation</p>
-    <nav class="nav" aria-label="Main">
+    <a class="brand" href="index.html">
+      <span class="name">Mason Victoria</span>
+      <span class="tag">sound design<span>|</span>composition<span>|</span>implementation</span>
+    </a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="nav" onclick="toggleMenu(this)">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main">
       <ul>
         <li class="active"><a href="index.html">Home</a></li>
         <li>
@@ -162,27 +260,24 @@
 </header>
 
 <main>
-  <!-- Reels -->
+  <!-- Reels: unchanged layout -->
   <section class="reels">
     <div class="wrap">
-      <!-- SOUND DESIGN REEL: replace 739765376 with the numeric id from the Vimeo URL -->
       <div class="video">
-        <iframe src="https://player.vimeo.com/video/739765376?title=0&byline=0&portrait=0" title="Sound design reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+        <iframe src="https://player.vimeo.com/video/739765376?title=0&byline=0&portrait=0" title="Sound design reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
       <div class="btn-row"><a class="btn" href="sounddesignportfolio.html">sound design portfolio</a></div>
 
       <div class="reel-pair">
         <div>
-          <!-- COMPOSITION REEL -->
           <div class="video">
-            <iframe src="https://player.vimeo.com/video/729712497?title=0&byline=0&portrait=0" title="Composition reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://player.vimeo.com/video/729712497?title=0&byline=0&portrait=0" title="Composition reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
           </div>
           <div class="btn-row"><a class="btn" href="compositionportfolio.html">composition portfolio</a></div>
         </div>
         <div>
-          <!-- TECHNICAL AUDIO REEL -->
           <div class="video">
-            <iframe src="https://player.vimeo.com/video/731488316?title=0&byline=0&portrait=0" title="Technical audio reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://player.vimeo.com/video/731488316?title=0&byline=0&portrait=0" title="Technical audio reel" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
           </div>
           <div class="btn-row"><a class="btn" href="programming.html">implementation portfolio</a></div>
         </div>
@@ -191,13 +286,14 @@
   </section>
 
   <!-- Hello -->
-  <section class="hello">
+  <section class="hello" id="hello">
+    <div class="bg" id="parallax" aria-hidden="true"></div>
     <div class="panel">
-      <h2>hello!</h2>
-      <p>My name is Mason Victoria and I am a Toronto-based composer and sound designer for video games, film and television. I also compose and arrange small and large ensemble music for live performance. Currently, I am a Technical Game Sound Designer at Warner Brothers Post-Production Creative Services.</p>
-      <p>This website outlines some of my freelance work and ongoing projects as well as houses my reels. Feel free to contact me through the 'ABOUT' page if you'd like to get in touch!</p>
-      <h3>additional reels</h3>
-      <div class="btn-grid">
+      <h2 class="reveal">hello!</h2>
+      <p class="reveal">My name is Mason Victoria and I am a Toronto-based composer and sound designer for video games, film and television. I also compose and arrange small and large ensemble music for live performance. Currently, I am a Technical Game Sound Designer at Warner Brothers Post-Production Creative Services.</p>
+      <p class="reveal">This website outlines some of my freelance work and ongoing projects as well as houses my reels. Feel free to contact me through the 'ABOUT' page if you'd like to get in touch!</p>
+      <h3 class="reveal">additional reels</h3>
+      <div class="btn-grid reveal">
         <a class="btn" href="compositionportfolio.html">composition</a>
         <a class="btn" href="programming.html">implementation</a>
         <a class="btn" href="chartingportfolio.html">charting</a>
@@ -207,107 +303,131 @@
   </section>
 
   <!-- Highlighted projects -->
-  <section class="projects">
+  <section class="projects" id="work">
     <div class="wrap">
-      <h2>highlighted projects</h2>
-      <p class="sub">(click the images below to learn more about the project!)</p>
+      <div class="head reveal">
+        <h2>highlighted projects<span class="sub">click an image to learn more about the project</span></h2>
+        <div class="filters" role="group" aria-label="Filter projects">
+          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="game" aria-pressed="false">Games</button>
+          <button class="chip" data-filter="film" aria-pressed="false">Film</button>
+          <button class="chip" data-filter="installation" aria-pressed="false">Installation</button>
+        </div>
+      </div>
 
-      <div class="grid">
-        <a class="tile" href="#">
+      <div class="grid" id="grid">
+        <a class="tile featured reveal" data-cat="game" href="#">
           <img src="images/lego-fortnite-odyssey.avif" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Lego Fortnite Odyssey</span>
           <span class="role">Sound Designer</span>
         </a>
-        <a class="tile" href="#">
+        <a class="tile reveal" data-cat="game" href="#">
           <img src="images/fortnite.jpg" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Fortnite</span>
           <span class="role">Sound Designer</span>
         </a>
-        <a class="tile" href="wartorn.html">
+        <a class="tile reveal" data-cat="game" href="wartorn.html">
           <img src="images/wartorn.jpg" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Wartorn</span>
           <span class="role">Audio Director,
 Stray Kite Studios</span>
         </a>
-        <a class="tile" href="#">
+        <a class="tile reveal" data-cat="game" href="#">
           <img src="images/failsafe.jpg" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">FailSafe</span>
           <span class="role">Audio Director,
 Stray Kite Studios</span>
         </a>
-        <a class="tile" href="#">
+        <a class="tile reveal" data-cat="game" href="#">
           <img src="images/unannounced-title.webp" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Unannounced Title</span>
           <span class="role">Lead Audio Designer,
 Disruptive Games</span>
         </a>
-        <a class="tile" href="https://masonachu.itch.io/the-adventures-of-borf-clorgman-space-intern" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="game" href="https://masonachu.itch.io/the-adventures-of-borf-clorgman-space-intern" target="_blank" rel="noopener">
           <img src="images/borf-clorgman.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">The Adventures of Borf Clorgman: Space Intern</span>
           <span class="role">Solo-developer</span>
         </a>
-        <a class="tile" href="https://beeznutzdev.itch.io/dice-of-the-hill" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="game" href="https://beeznutzdev.itch.io/dice-of-the-hill" target="_blank" rel="noopener">
           <img src="images/dice-of-the-hill.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Dice of the Hill</span>
           <span class="role">Game Score/Sound Design,
 Beez Interactive</span>
         </a>
-        <a class="tile" href="https://www.kenesu.com/thesis" target="_blank" rel="noopener">
+        <a class="tile featured reveal" data-cat="film" href="https://www.kenesu.com/thesis" target="_blank" rel="noopener">
           <img src="images/portrait-of-a-lady.jpg" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Portrait of a Lady</span>
           <span class="role">Film Score/Sound Design/Mixing,
 Kenneth Leoncito</span>
         </a>
-        <a class="tile" href="https://store.steampowered.com/app/1601830/Scoober_Splat/" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="game" href="https://store.steampowered.com/app/1601830/Scoober_Splat/" target="_blank" rel="noopener">
           <img src="images/scoober-splat.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Scoober Splat</span>
           <span class="role">Game Score/Sound Design,
 No Bloat Studios</span>
         </a>
-        <a class="tile" href="https://espionage.itch.io/espionage" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="game" href="https://espionage.itch.io/espionage" target="_blank" rel="noopener">
           <img src="images/espionage.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">EspionAge</span>
           <span class="role">Game Director/Audio Lead,
 Code Something Cool</span>
         </a>
-        <a class="tile" href="https://humbergalleries.ca/nuit-blanche-fellowship-2022" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="installation" href="https://humbergalleries.ca/nuit-blanche-fellowship-2022" target="_blank" rel="noopener">
           <img src="images/together-apart.png" alt="" onerror="this.remove()">
-          <span class="title">Together, Apart (Interactive Installation)</span>
-          <span class="role">Project Director/Creative Producer,
-Humber Galleries</span>
+          <span class="arrow">↗</span>
+          <span class="title">Together, Apart</span>
+          <span class="role">Interactive Installation
+Project Director/Creative Producer, Humber Galleries</span>
         </a>
-        <a class="tile" href="https://humbergalleries.ca/nuit-blanche-fellowship-2021-0" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="installation" href="https://humbergalleries.ca/nuit-blanche-fellowship-2021-0" target="_blank" rel="noopener">
           <img src="images/a-way-closer.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">A Way Closer</span>
           <span class="role">Game Director/Creative Producer/Lead Programmer,
 Humber Galleries</span>
         </a>
-        <a class="tile" href="https://youtu.be/j5LfyCJLYwk?t=388" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="game" href="https://youtu.be/j5LfyCJLYwk?t=388" target="_blank" rel="noopener">
           <img src="images/swordcery.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Swordcery</span>
           <span class="role">Game Score,
 LWMedia</span>
         </a>
-        <a class="tile" href="#">
+        <a class="tile reveal" data-cat="game" href="#">
           <img src="images/tungsten-and-sparky.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Tungsten and Sparky</span>
           <span class="role">Game Director/Audio Lead,
 Code Something Cool</span>
         </a>
-        <a class="tile" href="https://www.hankelly.com/freedom" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="film" href="https://www.hankelly.com/freedom" target="_blank" rel="noopener">
           <img src="images/freedom.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Freedom</span>
           <span class="role">Film Score,
 Kelly Han</span>
         </a>
-        <a class="tile" href="#">
+        <a class="tile reveal" data-cat="film" href="#">
           <img src="images/amazin.png" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Amazin</span>
           <span class="role">Film Score,
 Rami Awad</span>
         </a>
-        <a class="tile" href="https://www.imdb.com/title/tt16301182/" target="_blank" rel="noopener">
+        <a class="tile reveal" data-cat="film" href="https://www.imdb.com/title/tt16301182/" target="_blank" rel="noopener">
           <img src="images/blog-22.jpg" alt="" onerror="this.remove()">
+          <span class="arrow">↗</span>
           <span class="title">Blog 22</span>
           <span class="role">Sound Design,
 Monti Khalil</span>
@@ -317,5 +437,89 @@ Monti Khalil</span>
   </section>
 </main>
 
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="name-line">Mason Victoria</p>
+      <small class="tag">sound design<span>|</span>composition<span>|</span>implementation</small>
+    </div>
+    <div class="footer-actions">
+      <a class="btn" href="contact.html">get in touch</a>
+      <a class="social" href="https://www.linkedin.com/in/YOUR-LINKEDIN" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>
+      <a class="social" href="https://www.instagram.com/YOUR-INSTAGRAM" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Mobile menu
+  function toggleMenu(btn) {
+    const nav = document.getElementById('nav');
+    const open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  }
+
+  // Header compact state + scroll progress + parallax, all on one rAF loop
+  const header = document.getElementById('header');
+  const progress = document.getElementById('progress');
+  const parallax = document.getElementById('parallax');
+  const hello = document.getElementById('hello');
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const y = scrollY;
+      header.classList.toggle('compact', y > 40);
+      const max = document.documentElement.scrollHeight - innerHeight;
+      progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+      if (!reduce) {
+        const r = hello.getBoundingClientRect();
+        const t = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; // -1..1 as section crosses viewport
+        parallax.style.transform = `translateY(${t * -60}px)`;
+      }
+      ticking = false;
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Reveal on scroll (stagger grid tiles)
+  document.querySelectorAll('#grid .reveal').forEach((el, i) => el.style.setProperty('--i', i % 6));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Project filters
+  const tiles = [...document.querySelectorAll('#grid .tile')];
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === chip));
+      const f = chip.dataset.filter;
+      tiles.forEach((t, i) => {
+        const show = f === 'all' || t.dataset.cat === f;
+        t.classList.toggle('hidden', !show);
+        t.classList.remove('pop');
+        if (show && !reduce) { t.style.animationDelay = `${(i % 6) * 40}ms`; void t.offsetWidth; t.classList.add('pop'); }
+      });
+    });
+  });
+
+  // Cursor tilt on tiles (desktop with a fine pointer only)
+  if (!reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    tiles.forEach(t => {
+      t.addEventListener('pointermove', e => {
+        const r = t.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - .5;
+        const y = (e.clientY - r.top) / r.height - .5;
+        t.style.transform = `rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-4px)`;
+      });
+      t.addEventListener('pointerleave', () => { t.style.transform = ''; });
+    });
+  }
+</script>
 </body>
 </html>
