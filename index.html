@@ -479,7 +479,10 @@ Monti Khalil</span>
     ticking = true;
     requestAnimationFrame(() => {
       const y = scrollY;
-      header.classList.toggle('compact', y > 40);
+      // hysteresis: compact past 100px, expand only once back above 20px, so the header's
+      // own height change can't bounce the scroll position back across a single threshold
+      if (y > 100) header.classList.add('compact');
+      else if (y < 20) header.classList.remove('compact');
       const max = document.documentElement.scrollHeight - innerHeight;
       progress.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
       if (!reduce) {
