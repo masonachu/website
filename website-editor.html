@@ -134,6 +134,21 @@
   .pv-work .player.bandcamp iframe { width: 700px; max-width: 100%; height: 373px; }
   .pv-work video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: var(--ink); object-fit: cover; margin-bottom: 10px; }
   .pv-h { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
+  .pv-photo .panel .lede { font-size: 17px; line-height: 1.6; }
+  .pv-photo .panel .lede strong { color: var(--sky); }
+  .pv-projs { display: grid; gap: 14px; }
+  .pv-proj { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; }
+  .pv-proj::after { content: ""; display: block; clear: both; }
+  .pv-media { float: right; width: 50%; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--ink); margin: 2px 0 10px 16px; }
+  .pv-proj:nth-child(even) .pv-media { float: left; margin: 2px 16px 10px 0; }
+  .pv-media iframe, .pv-media img { display: block; width: 100%; height: 100%; border: 0; object-fit: cover; }
+  .pv-proj h3 { font-size: 17px; margin: 0 0 8px; }
+  .pv-proj .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; font-size: 11px; font-weight: 700; }
+  .pv-proj .chips span { padding: 2px 9px; border-radius: 999px; }
+  .pv-proj .chips .role { background: var(--navy); color: var(--white); }
+  .pv-proj .chips .tools { border: 1px solid var(--navy); }
+  .pv-proj .body p { font-size: 13px; line-height: 1.6; margin: 0 0 8px; }
+  .pv-btn { display: inline-block; border: 1px solid var(--navy); border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600; }
   .pv-work .player.placeholder { aspect-ratio: 16 / 7; display: grid; place-items: center; border: 1px dashed var(--rule); opacity: .55; font-size: 13px; }
 
   /* tile grid preview (mirrors the site) */
@@ -173,6 +188,7 @@
       <li><strong>Quotes &amp; photo</strong> — the quotes band on each portfolio page and its background photo.</li>
       <li><strong>Players</strong> — the SoundCloud / YouTube / Bandcamp cards on the composition pages.</li>
       <li><strong>Videos</strong> — the sound design clips: title, poster, streaming link and local MP4.</li>
+      <li><strong>Projects</strong> — the project cards on the programming page: write-up, role, tools, video or image, button.</li>
     </ul>
     <p><strong>Open website folder</strong> is the easy route (Chrome or Edge): pick your <code>website</code> folder once and the tool loads every page, saves them back and copies new photos into <code>images/</code> for you.</p>
     <p><strong>Load pages</strong> works in any browser, including Safari: pick one or more of the <code>.html</code> files. Saving then downloads new copies for you to drop into the folder, and you copy any new photos into <code>images/</code> yourself using the filenames shown.</p>
@@ -197,6 +213,9 @@
   const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escText = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const escUrl = s => String(s ?? '').replace(/"/g, '%22');   // URLs keep their raw & so saved files match what was there
+  // **bold** in text fields <-> <strong> in the page
+  const toMd = h => decode(String(h ?? '').replace(/<strong>([\s\S]*?)<\/strong>/g, '**$1**').replace(/<[^>]+>/g, ''));
+  const fromMd = t => escText(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   const decode = h => { const t = document.createElement('textarea'); t.innerHTML = h; return t.value; };
   const frag = h => new DOMParser().parseFromString('<div id="r">' + h + '</div>', 'text/html').getElementById('r');
   const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; };
@@ -346,10 +365,11 @@
 
   // ---------- quotes band (portfolio pages) ----------
   SECTIONS.quotes = {
-    label: 'Quotes & photo',
+    label: d => d.items.length ? 'Quotes & photo' : 'Intro & photo',
     parse(html) {
-      const sl = sectionSlice(html, '<section class="quotes"'); if (!sl) return null;
+      const sl = sectionSlice(html, '<section class="quotes'); if (!sl) return null;
       const root = frag(html.slice(sl[0], sl[1]));
+      const ledeEl = root.querySelector('.panel > p.lede');
       const items = [...root.querySelectorAll('blockquote')].map(b => {
         const cite = b.querySelector('cite'); let name = '', lines = [];
         if (cite) {
@@ -358,17 +378,17 @@
         }
         return { quote: b.querySelector('p')?.textContent || '', name, lines };
       });
-      return { items, bg: html.match(/\.quotes \.bg \{[^}]*url\("([^"]*)"\)/)?.[1] || '', bgPreview: '' };
+      return { items, lede: ledeEl ? toMd(ledeEl.innerHTML) : null, bg: html.match(/\.quotes \.bg \{[^}]*url\("([^"]*)"\)/)?.[1] || '', bgPreview: '' };
     },
     apply(html, d) {
       html = html.replace(/(\.quotes \.bg \{[^}]*url\(")([^"]*)("\))/, (m, a, u, c) => a + d.bg + c);
-      return replaceSlice(html, sectionSlice(html, '<section class="quotes"'), s => {
+      return replaceSlice(html, sectionSlice(html, '<section class="quotes'), s => {
         const po = s.indexOf('<div class="panel">'); if (po < 0) return s;
         const o = po + '<div class="panel">'.length, c = s.lastIndexOf('</div>', s.lastIndexOf('</section>'));
-        const body = d.items.map(q => {
+        const body = (d.lede != null ? [`      <p class="lede reveal">${fromMd(d.lede)}</p>`] : []).concat(d.items.map(q => {
           const cite = (q.name ? `<strong>${escText(q.name)}</strong>` : '') + (q.lines.length ? (q.name ? ', ' : '') + q.lines.map(escText).join('<br>') : '');
           return `      <blockquote class="quote reveal">\n        <p>${escText(q.quote)}</p>\n        <cite>${cite}</cite>\n      </blockquote>`;
-        }).join('\n');
+        })).join('\n');
         return s.slice(0, o) + '\n' + body + '\n    ' + s.slice(c);
       });
     },
@@ -377,12 +397,14 @@
       const d = sec.data;
       const root = el(`<div>
         <div class="card"><h3>Background photo</h3><div class="fields">${photoRow(d, page)}</div></div>
+        ${d.lede != null ? `<div class="card"><h3>Intro text</h3><div class="fields"><div class="field wide"><textarea data-lede rows="4">${esc(d.lede)}</textarea><div class="hint">Wrap words in **double asterisks** to highlight them.</div></div></div></div>` : ''}
         <h2>Quotes (drag to reorder)</h2>
         <div class="list" id="items"></div>
         <button class="add" data-add>+ Add a quote</button>
         <p class="note" style="margin-top:12px">Type the quotation marks yourself (“ ”) so they match the others. Put each line of the attribution on its own line.</p>
       </div>`);
       bindText(root, sec); bindPhoto(root, sec, page, 'bg');
+      root.querySelector('[data-lede]')?.addEventListener('input', e => { d.lede = e.target.value; dirty(sec); const pv = $('#previewWrap [data-pv="lede"]'); if (pv) pv.innerHTML = fromMd(d.lede); });
       itemList(root.querySelector('#items'), sec, d.items, {
         head: (q, i) => `<span class="name" data-name="${i}">${esc(q.name) || '<em>No name</em>'}</span><span class="meta" data-meta="${i}">${esc(q.quote.slice(0, 90))}${q.quote.length > 90 ? '…' : ''}</span>`,
         form: (q, i) => `
@@ -401,6 +423,7 @@
     preview(sec) {
       const d = sec.data;
       return el(`<div><h2>Preview</h2><div class="pv-photo" style="background-image:url('${esc(imgSrc(d.bgPreview || d.bg))}')"><div class="panel">
+        ${d.lede != null ? `<p class="lede" data-pv="lede">${fromMd(d.lede)}</p>` : ''}
         ${d.items.map((q, i) => `<blockquote><p data-pv="items.${i}.quote">${esc(q.quote)}</p><cite><strong data-pv="items.${i}.name">${esc(q.name)}</strong>${q.name && q.lines.length ? ', ' : ''}<span data-pv="items.${i}.lines">${q.lines.map(esc).join('<br>')}</span></cite></blockquote>`).join('')}
       </div></div><p class="legend">On phones the photo sits above the quotes instead of behind them.</p></div>`);
     }
@@ -580,6 +603,113 @@
     }
   };
 
+  // ---------- project cards (.proj in .proj-list on the programming page) ----------
+  const PL = '<div class="proj-list">';
+  function projRange(html) {
+    const i = html.indexOf(PL); if (i < 0) return null;
+    const o = i + PL.length; const secEnd = html.indexOf('</section>', o);
+    const wrapClose = html.lastIndexOf('</div>', secEnd); const c = html.lastIndexOf('</div>', wrapClose - 1);
+    return c < o ? null : [o, c];
+  }
+  const YT_ATTRS = 'loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen';
+  function projMediaHtml(m) {
+    if (m.type === 'youtube') return m.id ? `<div class="proj-media"><iframe src="https://www.youtube.com/embed/${escUrl(m.id)}" title="${esc(m.title)}" ${YT_ATTRS}></iframe></div>` : '<div class="proj-media"></div>';
+    if (!m.src) return '<div class="proj-media"></div>';
+    return `<div class="proj-media"><img src="${escUrl(m.src)}" alt=""${m.fallback ? ` onerror="this.onerror=null;this.src='${escUrl(m.fallback)}'"` : ''}></div>`;
+  }
+  SECTIONS.projects = {
+    label: 'Projects',
+    parse(html) {
+      const r = projRange(html); if (!r) return null;
+      const sl = sectionSlice(html, '<section class="projects">');
+      const heading = sl && sl[0] < r[0] ? html.slice(sl[0], r[0]).match(/<h2 class="reveal">([^<]*)<\/h2>/)?.[1] : null;
+      const items = [...frag(html.slice(r[0], r[1])).querySelectorAll('.proj')].map(p => {
+        const f = p.querySelector('.proj-media iframe'), im = p.querySelector('.proj-media img'), a = p.querySelector('.proj-body a.btn');
+        const media = f ? { type: 'youtube', id: (f.getAttribute('src') || '').match(/embed\/([^?&"]+)/)?.[1] || '', title: f.getAttribute('title') || '', src: '', fallback: '', preview: '' }
+          : { type: 'image', id: '', title: '', src: im?.getAttribute('src') || '', fallback: (im?.getAttribute('onerror') || '').match(/this\.src='([^']+)'/)?.[1] || '', preview: '' };
+        return {
+          title: p.querySelector('h3')?.textContent || '', role: p.querySelector('.proj-meta .role')?.textContent || '', tools: p.querySelector('.proj-meta .tools')?.textContent || '',
+          paras: [...p.querySelectorAll('.proj-body > p:not(.proj-meta)')].map(x => toMd(x.innerHTML)),
+          linkHref: a?.getAttribute('href') || '', linkText: a?.textContent || '', media
+        };
+      });
+      return { items, heading: heading == null ? null : decode(heading) };
+    },
+    apply(html, d) {
+      const r = projRange(html);
+      const body = d.items.map(p => {
+        const inner = [`<h3>${escText(p.title)}</h3>`, `<p class="proj-meta"><span class="role">${escText(p.role)}</span><span class="tools">${escText(p.tools)}</span></p>`, projMediaHtml(p.media)]
+          .concat(p.paras.map(t => `<p>${fromMd(t)}</p>`))
+          .concat(p.linkHref ? [`<a class="btn btn-dark" href="${escUrl(p.linkHref)}" target="_blank" rel="noopener">${escText(p.linkText || 'learn more')}</a>`] : []);
+        return `        <article class="proj reveal">\n          <div class="proj-body">\n            ${inner.join('\n            ')}\n          </div>\n        </article>`;
+      }).join('\n');
+      html = html.slice(0, r[0]) + '\n' + body + '\n      ' + html.slice(r[1]);
+      if (d.heading != null) html = replaceSlice(html, sectionSlice(html, '<section class="projects">'), s => s.replace(/(<h2 class="reveal">)([^<]*)(<\/h2>)/, (m, a, t, c) => a + escText(d.heading) + c));
+      return html;
+    },
+    images(d) { return d.items.flatMap(p => [p.media.src, p.media.fallback]); },
+    editor(sec, page) {
+      const d = sec.data;
+      const root = el(`<div>
+        <p class="note">Each card has a video or image beside the write-up, with the text wrapping underneath it (sides alternate automatically). Separate paragraphs with a blank line; wrap words in **double asterisks** to make them bold.</p>
+        ${d.heading != null ? `<div class="card"><div class="fields"><div class="field wide"><label>Section heading</label><input data-path="heading" data-pv="heading" value="${esc(d.heading)}"></div></div></div>` : ''}
+        <h2>Projects (drag to reorder)</h2>
+        <div class="list" id="items"></div>
+        <button class="add" data-add>+ Add a project</button>
+      </div>`);
+      const mediaThumb = m => m.type === 'youtube' ? (m.id ? `https://i.ytimg.com/vi/${m.id}/mqdefault.jpg` : '') : (m.preview || imgSrc(m.src));
+      itemList(root.querySelector('#items'), sec, d.items, {
+        thumb: p => mediaThumb(p.media),
+        head: (p, i) => `<span class="name" data-name="${i}">${esc(p.title) || '<em>Untitled</em>'}</span><span class="meta" data-meta="${i}">${esc([p.role, p.tools].filter(Boolean).join(' · '))}${p.media.type === 'youtube' ? ' · YouTube' : p.media.src ? ' · Image' : ' · No media'}</span>`,
+        form: (p, i) => `
+          <div class="field wide"><label>Project name</label><input data-path="items.${i}.title" data-pv="items.${i}.title" data-name-for="${i}" value="${esc(p.title)}" placeholder="Wartorn"></div>
+          <div class="field"><label>Role</label><input data-path="items.${i}.role" data-pv="items.${i}.role" data-meta-for="${i}" value="${esc(p.role)}" placeholder="Audio Director"></div>
+          <div class="field"><label>Tools</label><input data-path="items.${i}.tools" data-pv="items.${i}.tools" data-meta-for="${i}" value="${esc(p.tools)}" placeholder="Unreal 5 / Metasounds"></div>
+          <div class="field wide"><label>Write-up</label><textarea data-paras="${i}" rows="9">${esc(p.paras.join('\n\n'))}</textarea></div>
+          <div class="field"><label>Button text (optional)</label><input data-path="items.${i}.linkText" value="${esc(p.linkText)}" placeholder="download on Steam"></div>
+          <div class="field"><label>Button link</label><input data-path="items.${i}.linkHref" value="${esc(p.linkHref)}" placeholder="https://"></div>
+          <div class="field"><label>Media</label><select data-mtype="${i}"><option value="youtube" ${p.media.type === 'youtube' ? 'selected' : ''}>YouTube video</option><option value="image" ${p.media.type === 'image' ? 'selected' : ''}>Image</option></select></div>
+          ${p.media.type === 'youtube'
+            ? `<div class="field"><label>YouTube link or video ID</label><input data-yt="${i}" value="${esc(p.media.id)}" placeholder="oNDaNAGOWV4"></div><div class="field wide"><label>Video title (accessibility label)</label><input data-path="items.${i}.media.title" value="${esc(p.media.title)}"></div>`
+            : `<div class="field"><label>Image</label><input type="file" accept="image/*" data-mimg="${i}"><div class="hint">${esc(p.media.src || 'No image yet')}${p.media.src && isRemote(p.media.src) ? ' <span class="badge muted">hosted on Wix</span>' : ''}</div></div>`}`,
+        name: 'project'
+      });
+      bindText(root, sec);
+      root.querySelectorAll('[data-paras]').forEach(t => t.addEventListener('input', () => {
+        const i = +t.dataset.paras; d.items[i].paras = t.value.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean); dirty(sec);
+        const pv = $(`#previewWrap [data-pv="items.${i}.paras"]`); if (pv) pv.innerHTML = d.items[i].paras.map(x => `<p>${fromMd(x)}</p>`).join('');
+      }));
+      root.querySelectorAll('[data-yt]').forEach(inp => inp.addEventListener('change', () => {
+        const i = +inp.dataset.yt; const m = inp.value.trim().match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{6,})/) || inp.value.trim().match(/^([A-Za-z0-9_-]{6,})$/);
+        if (!m) { toast('That doesn’t look like a YouTube video. Paste the video link or its ID.'); inp.value = d.items[i].media.id; return; }
+        d.items[i].media.id = m[1]; dirty(sec); render();
+      }));
+      root.querySelectorAll('[data-mtype]').forEach(s => s.addEventListener('change', () => { const i = +s.dataset.mtype; d.items[i].media.type = s.value; dirty(sec); render(); }));
+      root.querySelectorAll('[data-mimg]').forEach(inp => inp.addEventListener('change', () => {
+        const file = inp.files[0]; if (!file) return; const m = d.items[+inp.dataset.mimg].media;
+        const safe = safeName(file.name); page.files.set('images/' + safe, new File([file], safe, { type: file.type }));
+        m.src = 'images/' + safe; m.fallback = ''; if (m.preview) URL.revokeObjectURL(m.preview); m.preview = URL.createObjectURL(file);
+        dirty(sec); render();
+      }));
+      root.querySelector('[data-add]').onclick = () => { d.items.push({ title: '', role: '', tools: '', paras: [], linkHref: '', linkText: '', media: { type: 'youtube', id: '', title: '', src: '', fallback: '', preview: '' } }); state.sel = d.items.length - 1; dirty(sec); render(); };
+      return root;
+    },
+    preview(sec) {
+      const d = sec.data;
+      const media = m => m.type === 'youtube' ? (m.id ? `<div class="pv-media"><iframe src="https://www.youtube.com/embed/${esc(m.id)}" title="${esc(m.title)}" loading="lazy" allowfullscreen></iframe></div>` : '<div class="pv-media"></div>')
+        : `<div class="pv-media">${m.src || m.preview ? `<img src="${esc(m.preview || imgSrc(m.src))}" alt="">` : ''}</div>`;
+      return el(`<div><h2>Preview</h2>${d.heading != null ? `<p class="pv-h" data-pv="heading">${esc(d.heading)}</p>` : ''}<div class="pv-projs">
+        ${d.items.map((p, i) => `<div class="pv-proj">
+          <h3 data-pv="items.${i}.title">${esc(p.title)}</h3>
+          <p class="chips"><span class="role" data-pv="items.${i}.role">${esc(p.role)}</span><span class="tools" data-pv="items.${i}.tools">${esc(p.tools)}</span></p>
+          ${media(p.media)}
+          <div class="body" data-pv="items.${i}.paras">${p.paras.map(x => `<p>${fromMd(x)}</p>`).join('')}</div>
+          ${p.linkHref ? `<span class="pv-btn">${esc(p.linkText || 'learn more')}</span>` : ''}
+        </div>`).join('')}
+      </div><p class="legend">Text wraps under the media, which alternates sides on the real page. YouTube shows an error when this file is opened directly from disk but works on the published site.</p></div>`);
+    }
+  };
+
   // ---------- highlighted projects grid (home page tiles) ----------
   const GRID_OPEN = '<div class="grid" id="grid">';
   const GRID_CLOSE = '\n      </div>\n    </div>\n  </section>';
@@ -668,7 +798,8 @@
     });
   }
 
-  const SECTION_ORDER = ['reels', 'bio', 'grid', 'quotes', 'works', 'videos'];
+  const SECTION_ORDER = ['reels', 'bio', 'grid', 'quotes', 'works', 'videos', 'projects'];
+  const secLabel = s => { const l = SECTIONS[s.type].label; return typeof l === 'function' ? l(s.data) : l; };
 
   // ============================================================ shared editor widgets
   function setPath(obj, path, val) { const ks = path.split('.'); const last = ks.pop(); for (const k of ks) obj = obj[k]; obj[last] = val; }
@@ -805,7 +936,7 @@
     state.pages.forEach((p, pi) => {
       const g = el(`<div><div class="pg-name">${esc(pageLabel(p))}</div></div>`);
       p.sections.forEach((s, si) => {
-        const b = el(`<button class="sec ${pi === state.cur.p && si === state.cur.s ? 'on' : ''}"><span>${SECTIONS[s.type].label}</span>${s.dirty ? '<span class="dot" title="Unsaved changes"></span>' : ''}</button>`);
+        const b = el(`<button class="sec ${pi === state.cur.p && si === state.cur.s ? 'on' : ''}"><span>${secLabel(s)}</span>${s.dirty ? '<span class="dot" title="Unsaved changes"></span>' : ''}</button>`);
         b.onclick = () => { state.cur = { p: pi, s: si }; state.sel = -1; render(); window.scrollTo({ top: 0 }); };
         g.appendChild(b);
       });
@@ -815,7 +946,7 @@
   function renderEditor() {
     const page = curPage(), sec = curSec(); const ed = $('#editor'); ed.innerHTML = '';
     if (!sec) return;
-    ed.appendChild(el(`<div class="editor-head"><h2>${SECTIONS[sec.type].label}</h2><span class="crumb">${esc(pageLabel(page))} · ${esc(page.name)}</span></div>`));
+    ed.appendChild(el(`<div class="editor-head"><h2>${secLabel(sec)}</h2><span class="crumb">${esc(pageLabel(page))} · ${esc(page.name)}</span></div>`));
     ed.appendChild(SECTIONS[sec.type].editor(sec, page));
   }
   function renderPreview() {
