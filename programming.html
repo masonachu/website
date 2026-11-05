@@ -26,14 +26,14 @@
   /* ---------- programming page ---------- */
   .page-title { font-family: var(--sans); text-align: center; font-size: 14px; letter-spacing: .28em; text-transform: uppercase; font-weight: 500; color: var(--white); margin: 6px 0 18px; }
   .reels .btn-trio { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 20px; }
-  .quotes { position: relative; color: var(--white); background: var(--ink); overflow: hidden; min-height: 400px; display: grid; grid-template-columns: 1fr 1fr; }
-  .quotes .bg { position: absolute; inset: -12% 0; background: url("images/programming-bg.jpg") center / cover no-repeat; will-change: transform; }
+  .quotes { position: relative; color: var(--white); background: #000; overflow: hidden; min-height: 400px; display: grid; grid-template-columns: 1fr 1fr; }
+  .quotes .bg { position: absolute; inset: -12% 0; background: url("images/programming-bg.jpg") 0% 54.5% / 82% auto no-repeat; will-change: transform; opacity: .33; -webkit-mask: radial-gradient(ellipse farthest-side, #000 60%, transparent 100%) 0% 54.5% / 82% 45.02vw no-repeat; mask: radial-gradient(ellipse farthest-side, #000 60%, transparent 100%) 0% 54.5% / 82% 45.02vw no-repeat; }
   .quotes::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,22,.3), rgba(11,15,22,.75)); }
   .quotes .panel { grid-column: 2; position: relative; background: linear-gradient(90deg, rgba(11,15,22,0) 0%, rgba(11,15,22,.78) 32%, rgba(11,15,22,.88) 100%); display: flex; flex-direction: column; justify-content: center; padding: 70px 10% 70px 14%; }
   .quotes .lede { font-size: clamp(19px, 1.7vw, 24px); line-height: 1.6; font-weight: 500; max-width: 30ch; }
   .quotes .lede strong { font-weight: 700; color: var(--sky); }
   .projects { padding: 80px 0 70px; }
-  .projects h2 { font-family: var(--sans); font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; margin-bottom: 44px; }
+  .projects h2 { font-family: var(--sans); font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; margin-bottom: 36px; }
   .proj-list { display: grid; gap: 22px; }
   .proj { background: var(--paper); border-radius: 14px; padding: 26px 28px 24px; }
   .proj::after { content: ""; display: block; clear: both; }
@@ -75,7 +75,7 @@
     --sky: #86c0e8;
     --sky-deep: #4a9ad6;
     --rule: rgba(36, 49, 71, .18);
-    --content: 1180px;
+    --content: 1020px;
     --sans: "Brandon Grotesque", "Brandon Grotesque Full", "Quicksand", "Avenir Next", system-ui, sans-serif;
     --body: "Quicksand", "Avenir Next", system-ui, sans-serif;
     --ease: cubic-bezier(.22, 1, .36, 1);
@@ -195,7 +195,7 @@
     border-left: 1px solid rgba(255,255,255,.08);
     display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 90px 9% 90px 8%;
   }
-  .hello h2 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; margin-bottom: 28px; }
+  .hello h2 { font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; margin-bottom: 22px; }
   .hello p { font-size: 17px; font-weight: 500; line-height: 1.75; margin-bottom: 22px; max-width: 52ch; }
   .hello h3 { margin: 26px 0 20px auto; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; font-weight: 500; color: var(--sky); text-align: right; width: 100%; max-width: 480px; }
   .hello .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 480px; margin-left: auto; }
@@ -204,8 +204,8 @@
   /* ---------- projects ---------- */
   .projects { padding: 110px 0 120px; background: var(--paper); }
   .projects .head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 40px; }
-  .projects h2 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; }
-  .projects h2 .sub { display: block; font-family: var(--body); font-size: .4em; font-weight: 400; font-style: italic; color: var(--ink); margin-top: 12px; letter-spacing: 0; }
+  .projects h2 { font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; }
+  .projects h2 .sub { display: block; font-family: var(--body); font-size: 15px; font-weight: 400; font-style: italic; color: var(--ink); margin-top: 10px; letter-spacing: 0; text-transform: none; }
 
   .filters { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { padding: 9px 18px; border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; transition: all .25s var(--ease); }

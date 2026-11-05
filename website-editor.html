@@ -112,15 +112,29 @@
   .pv-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
   .pv-title { text-align: center; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; margin: 0 0 12px; opacity: .85; }
   .pv-cap { text-align: center; font-size: 12px; opacity: .6; margin-top: 8px; }
-  .pv-photo { position: relative; border-radius: 14px; overflow: hidden; background: #1f2630 center / cover no-repeat; min-height: 360px; display: grid; }
-  .pv-photo .panel { align-self: stretch; justify-self: end; width: min(100%, 62%); padding: 34px 32px; color: var(--white); background: linear-gradient(to right, rgba(36,49,71,0), rgba(36,49,71,.92) 28%, rgba(36,49,71,.96)); }
-  .pv-photo .panel h2 { color: var(--white); opacity: 1; font-size: 30px; letter-spacing: -.01em; margin: 0 0 16px; }
-  .pv-photo .panel p { font-size: 14px; line-height: 1.7; margin: 0 0 14px; }
-  .pv-photo .panel h3 { font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--sky); font-weight: 500; text-align: right; margin: 18px 0 0; }
-  .pv-photo blockquote { margin: 0 0 18px; }
-  .pv-photo blockquote p { font-size: 14px; line-height: 1.6; margin: 0 0 8px; }
-  .pv-photo cite { font-style: normal; font-size: 12px; color: #d3d8de; line-height: 1.5; display: block; }
-  .pv-photo cite strong { color: var(--white); }
+  /* band preview: a 1440px-wide copy of the real section, scaled to fit (see fitBands) */
+  .pv-frame { position: relative; overflow: hidden; border-radius: 14px; background: #1f2630; }
+  .pv-photo { position: relative; width: 1440px; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; transform-origin: 0 0; color: #fff; cursor: grab; user-select: none; touch-action: none; }
+  .pv-photo.grabbing { cursor: grabbing; }
+  .pv-photo .pv-bg { position: absolute; inset: -12% 0; background-repeat: no-repeat; pointer-events: none; }
+  .pv-photo .pv-shade { position: absolute; inset: 0; pointer-events: none; }
+  .pv-quotes .pv-shade { background: linear-gradient(90deg, rgba(11,15,22,.3), rgba(11,15,22,.75)); }
+  .pv-hello .pv-shade { background: linear-gradient(90deg, rgba(11,15,22,.35), rgba(11,15,22,.75)); }
+  .pv-photo .panel { grid-column: 2; position: relative; display: flex; flex-direction: column; justify-content: center; }
+  .pv-quotes .panel { background: linear-gradient(90deg, rgba(11,15,22,0) 0%, rgba(11,15,22,.78) 32%, rgba(11,15,22,.88) 100%); padding: 56px 9% 56px 14%; }
+  .pv-hello .panel { background: rgba(11,15,22,.45); backdrop-filter: blur(6px); border-left: 1px solid rgba(255,255,255,.08); align-items: flex-start; padding: 90px 9% 90px 8%; }
+  .colorrow { display: flex; gap: 8px; align-items: center; }
+  .colorrow input[type="color"] { width: 44px; height: 38px; padding: 2px; border: 1px solid var(--rule); border-radius: 8px; background: var(--white); flex: none; }
+  .field input[type="range"] { padding: 0; border: 0; accent-color: var(--navy); }
+  .field label span { float: right; font-weight: 500; opacity: .8; }
+  .pv-photo .panel h2 { color: #fff; opacity: 1; font-size: 26px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; margin: 0 0 22px; }
+  .pv-photo .panel p { font-size: 17px; font-weight: 500; line-height: 1.75; margin: 0 0 22px; max-width: 52ch; }
+  .pv-photo .panel h3 { font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--sky); font-weight: 500; text-align: right; margin: 26px 0 0 auto; width: 100%; max-width: 480px; }
+  .pv-photo blockquote { margin: 0; padding-left: 22px; border-left: 2px solid var(--sky); }
+  .pv-photo blockquote + blockquote { margin-top: 30px; }
+  .pv-photo blockquote p { font-size: 16px; line-height: 1.7; margin: 0; max-width: none; }
+  .pv-photo cite { font-style: normal; font-size: 14px; color: #d3d8de; line-height: 1.55; display: block; text-align: right; margin-top: 12px; }
+  .pv-photo cite strong { color: #fff; font-weight: 700; }
   .pv-works { display: grid; grid-template-columns: 1fr; gap: 14px; }
   .pv-works.two { grid-template-columns: 1fr 1fr; }
   .pv-work { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; min-width: 0; }
@@ -134,8 +148,8 @@
   .pv-work .player.bandcamp iframe { width: 700px; max-width: 100%; height: 373px; }
   .pv-work video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: var(--ink); object-fit: cover; margin-bottom: 10px; }
   .pv-h { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
-  .pv-photo .panel .lede { font-size: 17px; line-height: 1.6; }
-  .pv-photo .panel .lede strong { color: var(--sky); }
+  .pv-photo .panel .lede { font-size: 24px; line-height: 1.6; max-width: 30ch; margin: 0; }
+  .pv-photo .panel .lede strong { color: var(--sky); font-weight: 700; }
   .pv-projs { display: grid; gap: 14px; }
   .pv-proj { background: var(--white); border: 1px solid var(--rule); border-radius: 12px; padding: 14px; }
   .pv-proj::after { content: ""; display: block; clear: both; }
@@ -319,11 +333,11 @@
         heading: panel.querySelector('h2')?.textContent ?? '',
         paras: [...panel.querySelectorAll(':scope > p')].map(p => p.textContent),
         sub: panel.querySelector('h3')?.textContent ?? '',
-        bg: html.match(/\.hello \.bg \{[^}]*url\("([^"]*)"\)/)?.[1] || '', bgPreview: ''
+        ...parseBand(html, 'hello')
       };
     },
     apply(html, d) {
-      html = html.replace(/(\.hello \.bg \{[^}]*url\(")([^"]*)("\))/, (m, a, u, c) => a + d.bg + c);
+      html = applyBand(html, 'hello', d);
       return replaceSlice(html, sectionSlice(html, '<section class="hello"'), s => {
         s = s.replace(/<h2 class="reveal">[\s\S]*?(?=\n\s*<h3 class="reveal">)/, `<h2 class="reveal">${escText(d.heading)}</h2>\n` + d.paras.map(p => `      <p class="reveal">${escText(p)}</p>`).join('\n'));
         return s.replace(/(<h3 class="reveal">)([^<]*)(<\/h3>)/, (m, a, t, c) => a + escText(d.sub) + c);
@@ -333,7 +347,7 @@
     editor(sec, page) {
       const d = sec.data;
       const root = el(`<div>
-        <div class="card"><h3>Background photo</h3><div class="fields">${photoRow(d, page)}</div></div>
+        ${bandCard(d)}
         <div class="card"><div class="fields">
           <div class="field wide"><label>Heading</label><input data-path="heading" data-pv="heading" value="${esc(d.heading)}"></div>
         </div></div>
@@ -344,7 +358,7 @@
           <div class="field wide"><label>Small heading above the buttons</label><input data-path="sub" data-pv="sub" value="${esc(d.sub)}"></div>
         </div></div>
       </div>`);
-      bindText(root, sec); bindPhoto(root, sec, page, 'bg');
+      bindText(root, sec); bindBand(root, sec, page);
       itemList(root.querySelector('#items'), sec, d.paras, {
         head: (p, i) => `<span class="name">Paragraph ${i + 1}</span><span class="meta" data-meta="${i}">${esc(p.slice(0, 90))}${p.length > 90 ? '…' : ''}</span>`,
         form: (p, i) => `<div class="field wide"><label>Text</label><textarea data-path="paras.${i}" data-pv="paras.${i}" data-meta-for="${i}" rows="5">${esc(p)}</textarea></div>`,
@@ -355,11 +369,11 @@
     },
     preview(sec) {
       const d = sec.data;
-      return el(`<div><h2>Preview</h2><div class="pv-photo" style="background-image:url('${esc(imgSrc(d.bgPreview || d.bg))}')"><div class="panel">
+      const node = el(`<div><h2>Preview</h2>${bandPreview(d, 'hello', `
         <h2 data-pv="heading">${esc(d.heading)}</h2>
         ${d.paras.map((p, i) => `<p data-pv="paras.${i}">${esc(p)}</p>`).join('')}
-        <h3 data-pv="sub">${esc(d.sub)}</h3>
-      </div></div><p class="legend">Roughly how the panel sits over the photo on a desktop; the buttons under the small heading aren't editable here.</p></div>`);
+        <h3 data-pv="sub">${esc(d.sub)}</h3>`)}<p class="legend">A 1440×900 desktop window, scaled down. Drag the photo to pan it. The buttons under the small heading aren't editable here.</p></div>`);
+      bindBandPreview(node, sec); return node;
     }
   };
 
@@ -378,10 +392,10 @@
         }
         return { quote: b.querySelector('p')?.textContent || '', name, lines };
       });
-      return { items, lede: ledeEl ? toMd(ledeEl.innerHTML) : null, bg: html.match(/\.quotes \.bg \{[^}]*url\("([^"]*)"\)/)?.[1] || '', bgPreview: '' };
+      return { items, lede: ledeEl ? toMd(ledeEl.innerHTML) : null, ...parseBand(html, 'quotes') };
     },
     apply(html, d) {
-      html = html.replace(/(\.quotes \.bg \{[^}]*url\(")([^"]*)("\))/, (m, a, u, c) => a + d.bg + c);
+      html = applyBand(html, 'quotes', d);
       return replaceSlice(html, sectionSlice(html, '<section class="quotes'), s => {
         const po = s.indexOf('<div class="panel">'); if (po < 0) return s;
         const o = po + '<div class="panel">'.length, c = s.lastIndexOf('</div>', s.lastIndexOf('</section>'));
@@ -396,14 +410,14 @@
     editor(sec, page) {
       const d = sec.data;
       const root = el(`<div>
-        <div class="card"><h3>Background photo</h3><div class="fields">${photoRow(d, page)}</div></div>
+        ${bandCard(d)}
         ${d.lede != null ? `<div class="card"><h3>Intro text</h3><div class="fields"><div class="field wide"><textarea data-lede rows="4">${esc(d.lede)}</textarea><div class="hint">Wrap words in **double asterisks** to highlight them.</div></div></div></div>` : ''}
         <h2>Quotes (drag to reorder)</h2>
         <div class="list" id="items"></div>
         <button class="add" data-add>+ Add a quote</button>
         <p class="note" style="margin-top:12px">Type the quotation marks yourself (“ ”) so they match the others. Put each line of the attribution on its own line.</p>
       </div>`);
-      bindText(root, sec); bindPhoto(root, sec, page, 'bg');
+      bindText(root, sec); bindBand(root, sec, page);
       root.querySelector('[data-lede]')?.addEventListener('input', e => { d.lede = e.target.value; dirty(sec); const pv = $('#previewWrap [data-pv="lede"]'); if (pv) pv.innerHTML = fromMd(d.lede); });
       itemList(root.querySelector('#items'), sec, d.items, {
         head: (q, i) => `<span class="name" data-name="${i}">${esc(q.name) || '<em>No name</em>'}</span><span class="meta" data-meta="${i}">${esc(q.quote.slice(0, 90))}${q.quote.length > 90 ? '…' : ''}</span>`,
@@ -422,10 +436,10 @@
     },
     preview(sec) {
       const d = sec.data;
-      return el(`<div><h2>Preview</h2><div class="pv-photo" style="background-image:url('${esc(imgSrc(d.bgPreview || d.bg))}')"><div class="panel">
+      const node = el(`<div><h2>Preview</h2>${bandPreview(d, 'quotes', `
         ${d.lede != null ? `<p class="lede" data-pv="lede">${fromMd(d.lede)}</p>` : ''}
-        ${d.items.map((q, i) => `<blockquote><p data-pv="items.${i}.quote">${esc(q.quote)}</p><cite><strong data-pv="items.${i}.name">${esc(q.name)}</strong>${q.name && q.lines.length ? ', ' : ''}<span data-pv="items.${i}.lines">${q.lines.map(esc).join('<br>')}</span></cite></blockquote>`).join('')}
-      </div></div><p class="legend">On phones the photo sits above the quotes instead of behind them.</p></div>`);
+        ${d.items.map((q, i) => `<blockquote><p data-pv="items.${i}.quote">${esc(q.quote)}</p><cite><strong data-pv="items.${i}.name">${esc(q.name)}</strong>${q.name && q.lines.length ? ', ' : ''}<span data-pv="items.${i}.lines">${q.lines.map(esc).join('<br>')}</span></cite></blockquote>`).join('')}`)}<p class="legend">A 1440px-wide desktop window, scaled down. Drag the photo to pan it. On phones the photo sits above the text instead of behind it.</p></div>`);
+      bindBandPreview(node, sec); return node;
     }
   };
 
@@ -818,16 +832,117 @@
       extra?.();
     }));
   }
-  function photoRow(d, page) {
-    const src = imgSrc(d.bgPreview || d.bg);
-    return `<div class="imgrow"><img src="${esc(src)}" alt="" onerror="this.removeAttribute('src')"><div class="field"><label>Photo</label><input type="file" accept="image/*" data-photo><div class="hint">${esc(d.bg || 'No photo yet')}${d.bg && isRemote(d.bg) ? ' <span class="badge muted">hosted on Wix</span>' : ''}</div></div></div>`;
+  // ---------- band photo: the .bg image behind the bio / quotes panel, with colour, opacity, zoom and pan ----------
+  // page CSS:  .<sel> { ... background: <colour>; ... }   .<sel> .bg { ... background: url("..") X% Y% / cover|Z% auto no-repeat; ... opacity: O; }
+  const COLOR_VARS = { 'var(--ink)': '#0b0f16', 'var(--navy)': '#243147', 'var(--paper)': '#f6f7f9', 'var(--white)': '#ffffff' };
+  const fmtOp = v => String(Math.round(v * 100) / 100).replace(/^0\./, '.');
+  function parseBand(html, sel) {
+    const d = { bg: '', bgX: 50, bgY: 50, bgZoom: 100, bgOpacity: 1, bgColor: '#0b0f16', bgColorRaw: 'var(--ink)', bgPreview: '' };
+    const m = html.match(new RegExp('\\.' + sel + ' \\.bg \\{([^}]*)\\}')); if (!m) return d;
+    const u = m[1].match(/url\("([^"]*)"\)\s*([^/;]*?)\s*\/\s*([^;]+?)\s+no-repeat/);
+    if (u) {
+      d.bg = u[1]; const pos = u[2].trim();
+      if (pos && pos !== 'center') { const p = pos.split(/\s+/); d.bgX = parseFloat(p[0]); d.bgY = parseFloat(p[1] ?? '50'); }
+      const z = u[3].trim().match(/^([\d.]+)%/); if (z) d.bgZoom = parseFloat(z[1]);
+    }
+    const op = m[1].match(/opacity:\s*([\d.]+)/); if (op) d.bgOpacity = parseFloat(op[1]);
+    const mk = m[1].match(/mask:[^;]*\/\s*([\d.]+)%\s+([\d.]+)vw/); if (mk) d.bgRatio = parseFloat(mk[2]) / parseFloat(mk[1]);   // image h/w, kept in the mask size
+    const s = html.match(new RegExp('\\.' + sel + ' \\{([^}]*)\\}')); const col = s?.[1].match(/(?:^|;)\s*background:\s*([^;]+);/)?.[1].trim();
+    if (col) { d.bgColorRaw = col; d.bgColor = COLOR_VARS[col] || col; }
+    const mh = s?.[1].match(/min-height:\s*(\d+)px/); d.bandMinH = mh ? +mh[1] : 900;   // 100svh on the home page ≈ a 900px-tall desktop window
+    return d;
   }
-  function bindPhoto(root, sec, page, key) {
+  const bandRatio = d => natural.get(imgSrc(d.bgPreview || d.bg))?.ratio || d.bgRatio || 9 / 16;
+  const MASK_GRADIENT = 'radial-gradient(ellipse farthest-side, #000 60%, transparent 100%)';
+  function applyBand(html, sel, d) {
+    html = html.replace(new RegExp('(\\.' + sel + ' \\.bg \\{)([^}]*)(\\})'), (m, a, b, c) => {
+      const pos = +d.bgX === 50 && +d.bgY === 50 ? 'center' : `${+d.bgX}% ${+d.bgY}%`;
+      const z = +d.bgZoom, size = z === 100 ? 'cover' : `${z}% auto`;
+      b = b.replace(/url\("[^"]*"\)\s*[^/;]*?\s*\/\s*[^;]+?\s+no-repeat/, `url("${d.bg}") ${pos} / ${size} no-repeat`);
+      b = b.replace(/\s*opacity:\s*[\d.]+;/, '').replace(/\s*(?:-webkit-)?mask:[^;]+;/g, '');
+      let extra = '';
+      if (+d.bgOpacity !== 1) extra += ` opacity: ${fmtOp(d.bgOpacity)};`;
+      if (z < 100) {   // zoomed out: fade the photo's edges into the colour behind it (mask sized like the photo; the band is full-bleed, so vw ≈ its width)
+        const mask = `${MASK_GRADIENT} ${pos} / ${z}% ${+(z * bandRatio(d)).toFixed(2)}vw no-repeat`;
+        extra += ` -webkit-mask: ${mask}; mask: ${mask};`;
+      }
+      if (extra) b = b.replace(/\s*$/, '') + extra + ' ';
+      return a + b + c;
+    });
+    const keepRaw = (COLOR_VARS[d.bgColorRaw] || d.bgColorRaw).toLowerCase() === d.bgColor.toLowerCase();
+    return html.replace(new RegExp('(\\.' + sel + ' \\{[^}]*?)background:\\s*[^;]+;'), (m, a) => a + `background: ${keepRaw ? d.bgColorRaw : d.bgColor};`);
+  }
+  function bandCard(d) {
+    const src = imgSrc(d.bgPreview || d.bg);
+    return `<div class="card"><h3>Background photo</h3><div class="fields">
+      <div class="imgrow"><img src="${esc(src)}" alt="" onerror="this.removeAttribute('src')"><div class="field"><label>Photo</label><input type="file" accept="image/*" data-photo><div class="hint">${esc(d.bg || 'No photo yet')}${d.bg && isRemote(d.bg) ? ' <span class="badge muted">hosted on Wix</span>' : ''}</div></div></div>
+      <div class="field"><label>Colour behind the photo</label><div class="colorrow"><input type="color" data-band="bgColor" value="${esc(d.bgColor)}"><input data-band-hex value="${esc(d.bgColor)}" maxlength="7" spellcheck="false"></div></div>
+      <div class="field"><label>Photo opacity <span data-out="bgOpacity">${Math.round(d.bgOpacity * 100)}%</span></label><input type="range" min="0" max="100" data-band="bgOpacity" value="${Math.round(d.bgOpacity * 100)}"></div>
+      <div class="field"><label>Zoom <span data-out="bgZoom">${d.bgZoom}%</span></label><input type="range" min="30" max="250" data-band="bgZoom" value="${d.bgZoom}"></div>
+      <div class="field"><label>Pan left ↔ right <span data-out="bgX">${Math.round(d.bgX)}%</span></label><input type="range" min="0" max="100" data-band="bgX" value="${d.bgX}"></div>
+      <div class="field"><label>Pan up ↕ down <span data-out="bgY">${Math.round(d.bgY)}%</span></label><input type="range" min="0" max="100" data-band="bgY" value="${d.bgY}"></div>
+      <div class="field wide"><div class="hint">You can also drag the photo in the preview to pan it. 100% fills the band; below 100% the photo shrinks and its edges fade into the colour behind it. The preview is a scaled-down 1440px-wide desktop window; on phones the photo shows as its own block.</div></div>
+    </div></div>`;
+  }
+  function bindBand(root, sec, page) {
+    const d = sec.data;
     root.querySelector('[data-photo]')?.addEventListener('change', e => {
       const file = e.target.files[0]; if (!file) return;
       const safe = safeName(file.name); page.files.set('images/' + safe, new File([file], safe, { type: file.type }));
-      sec.data[key] = 'images/' + safe; if (sec.data.bgPreview) URL.revokeObjectURL(sec.data.bgPreview); sec.data.bgPreview = URL.createObjectURL(file);
+      d.bg = 'images/' + safe; if (d.bgPreview) URL.revokeObjectURL(d.bgPreview); d.bgPreview = URL.createObjectURL(file);
       dirty(sec); render();
+    });
+    root.querySelectorAll('[data-band]').forEach(inp => inp.addEventListener('input', () => {
+      const k = inp.dataset.band; d[k] = k === 'bgColor' ? inp.value : k === 'bgOpacity' ? +inp.value / 100 : +inp.value;
+      if (k === 'bgColor') root.querySelector('[data-band-hex]').value = inp.value;
+      syncBandOutputs(root, d); dirty(sec); paintBand(d);
+    }));
+    root.querySelector('[data-band-hex]')?.addEventListener('change', e => {
+      const v = e.target.value.trim(); if (!/^#[0-9a-f]{6}$/i.test(v)) { toast('Use a 6-digit hex colour like #000000.'); e.target.value = d.bgColor; return; }
+      d.bgColor = v.toLowerCase(); root.querySelector('[data-band="bgColor"]').value = d.bgColor; dirty(sec); paintBand(d);
+    });
+  }
+  function syncBandOutputs(root, d) {
+    if (!root) return;
+    const vals = { bgOpacity: Math.round(d.bgOpacity * 100), bgZoom: d.bgZoom, bgX: d.bgX, bgY: d.bgY };
+    for (const k in vals) { const s = root.querySelector(`[data-out="${k}"]`); if (s) s.textContent = Math.round(vals[k]) + '%'; const r = root.querySelector(`[data-band="${k}"]`); if (r) r.value = vals[k]; }
+  }
+  // The preview is a real 1440px-wide replica of the band, scaled down to fit the column, so crops match a desktop window.
+  const PV_W = 1440;
+  function bandBgStyle(d) {
+    const z = +d.bgZoom, pos = `${+d.bgX}% ${+d.bgY}%`;
+    let s = `background-image:url('${esc(imgSrc(d.bgPreview || d.bg))}');background-position:${pos};background-size:${z === 100 ? 'cover' : z + '% auto'};opacity:${d.bgOpacity};`;
+    if (z < 100) { const mask = `${MASK_GRADIENT} ${pos} / ${z}% ${Math.round(PV_W * z / 100 * bandRatio(d))}px no-repeat`; s += `-webkit-mask:${mask};mask:${mask};`; }
+    return s;
+  }
+  const bandPreview = (d, kind, inner) => `<div class="pv-frame"><div class="pv-photo pv-${kind}" style="background:${esc(d.bgColor)};min-height:${d.bandMinH || 440}px" title="Drag to pan the photo"><div class="pv-bg" style="${bandBgStyle(d)}"></div><div class="pv-shade"></div><div class="panel">${inner}</div></div></div>`;
+  function paintBand(d) { const ph = $('#previewWrap .pv-photo'); if (!ph) return; ph.style.background = d.bgColor; ph.querySelector('.pv-bg').style.cssText = bandBgStyle(d); fitBands(); }
+  function fitBands() {
+    document.querySelectorAll('#previewWrap .pv-frame').forEach(f => { const ph = f.firstElementChild; const k = f.clientWidth / PV_W; ph.style.transform = `scale(${k})`; f.style.height = Math.round(ph.offsetHeight * k) + 'px'; });
+  }
+  const bandRO = new ResizeObserver(() => fitBands());
+  addEventListener('resize', fitBands);
+  const natural = new Map();   // image url -> natural size, for the edge-fade mask and for working out how far a drag pans
+  function loadNatural(url, then) { if (!url) return; if (natural.has(url)) { then?.(); return; } const im = new Image(); im.onload = () => { natural.set(url, { w: im.naturalWidth, h: im.naturalHeight, ratio: im.naturalHeight / im.naturalWidth }); then?.(); }; im.src = url; }
+  function bindBandPreview(node, sec) {
+    const ph = node.querySelector('.pv-photo'); if (!ph) return; const d = sec.data;
+    bandRO.observe(ph); bandRO.observe(ph.parentElement);
+    loadNatural(imgSrc(d.bgPreview || d.bg), () => paintBand(d));   // once the size is known the mask can be drawn correctly
+    ph.addEventListener('pointerdown', e => {
+      const url = imgSrc(d.bgPreview || d.bg); if (!url || !natural.has(url)) { loadNatural(url); return; }
+      const { w, h } = natural.get(url); const W = ph.offsetWidth, H = ph.offsetHeight * 1.24, z = +d.bgZoom;   // the .bg box is 24% taller than the band (inset: -12% 0)
+      const k = ph.getBoundingClientRect().width / W;
+      let iw, ih; if (z === 100) { const s = Math.max(W / w, H / h); iw = w * s; ih = h * s; } else { iw = W * z / 100; ih = h * iw / w; }
+      const ox = iw - W, oy = ih - H, sx = e.clientX, sy = e.clientY, x0 = +d.bgX, y0 = +d.bgY; let moved = false;
+      ph.setPointerCapture(e.pointerId); ph.classList.add('grabbing');
+      const move = ev => {
+        moved = true;
+        if (Math.abs(ox) > 1) d.bgX = Math.round(Math.min(100, Math.max(0, x0 - (ev.clientX - sx) / k / ox * 100)) * 10) / 10;
+        if (Math.abs(oy) > 1) d.bgY = Math.round(Math.min(100, Math.max(0, y0 - (ev.clientY - sy) / k / oy * 100)) * 10) / 10;
+        paintBand(d); syncBandOutputs($('#editor'), d);
+      };
+      const up = () => { ph.removeEventListener('pointermove', move); ph.removeEventListener('pointerup', up); ph.removeEventListener('pointercancel', up); ph.classList.remove('grabbing'); if (moved) dirty(sec); };
+      ph.addEventListener('pointermove', move); ph.addEventListener('pointerup', up); ph.addEventListener('pointercancel', up); e.preventDefault();
     });
   }
   // generic reorderable list of items with an expandable form

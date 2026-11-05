@@ -28,7 +28,7 @@
   .reels .btn-trio { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 20px; }
 
   .quotes { position: relative; color: var(--white); background: var(--ink); overflow: hidden; min-height: 440px; display: grid; grid-template-columns: 1fr 1fr; }
-  .quotes .bg { position: absolute; inset: -12% 0; background: url("https://static.wixstatic.com/media/1e4cea_8489ab821389464a9db45958bfef20f1~mv2_d_2048_1365_s_2.jpg") center / cover no-repeat; will-change: transform; }
+  .quotes .bg { position: absolute; inset: -12% 0; background: url("https://static.wixstatic.com/media/1e4cea_8489ab821389464a9db45958bfef20f1~mv2_d_2048_1365_s_2.jpg") 100% 43% / 106% auto no-repeat; will-change: transform; opacity: .61; }
   .quotes::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,22,.3), rgba(11,15,22,.75)); }
   .quotes .panel { grid-column: 2; position: relative; background: linear-gradient(90deg, rgba(11,15,22,0) 0%, rgba(11,15,22,.78) 32%, rgba(11,15,22,.88) 100%); display: flex; flex-direction: column; justify-content: center; padding: 56px 9% 56px 14%; }
   .quote { position: relative; padding-left: 22px; border-left: 2px solid var(--sky); }
@@ -38,11 +38,11 @@
   .quote cite strong { font-weight: 700; color: var(--white); }
 
   .works { padding: 80px 0 70px; }
-  .works h2 { font-family: var(--sans); font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; margin-bottom: 44px; }
+  .works h2 { font-family: var(--sans); font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; margin-bottom: 36px; }
   .works-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .work.full { grid-column: 1 / -1; }
   .work { background: var(--paper); border-radius: 14px; padding: 20px 20px 18px; }
-  .work h3 { font-family: var(--sans); font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+  .work h3 { font-family: var(--sans); font-size: 15px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 12px; }
   .work .player { border-radius: 10px; overflow: hidden; background: var(--white); }
   .work .player iframe { display: block; width: 100%; border: 0; }
   .work .video-player { aspect-ratio: 16 / 9; width: min(100%, calc(52vh * 16 / 9)); margin-inline: auto; }
@@ -50,12 +50,12 @@
   .work .player.placeholder { aspect-ratio: 16 / 7; display: grid; place-items: center; border: 1px dashed var(--rule); color: var(--navy); opacity: .55; font-size: 14px; text-align: center; padding: 16px; }
 
   .intro { background: var(--ink); color: var(--white); padding: 34px 0 30px; text-align: center; }
-  .intro h1 { font-family: var(--sans); font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.01em; }
+  .intro h1 { font-family: var(--sans); font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
   .intro p { margin-top: 10px; font-size: 16px; color: rgba(255,255,255,.75); }
   .work .player.bandcamp { background: transparent; display: flex; justify-content: center; }
   .work .player.bandcamp iframe { max-width: 100%; }
   .more { text-align: center; margin-top: 40px; }
-  .more h2 { font-family: var(--sans); font-size: clamp(26px, 2.8vw, 34px); font-weight: 700; margin-bottom: 20px; }
+  .more h2 { font-family: var(--sans); font-size: clamp(16px, 1.6vw, 20px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 20px; }
   .btn.btn-dark { color: var(--navy); border-color: var(--navy); }
   .btn.btn-dark::before { background: var(--navy); }
   .btn.btn-dark:hover { color: var(--white); }
@@ -82,7 +82,7 @@
     --sky: #86c0e8;
     --sky-deep: #4a9ad6;
     --rule: rgba(36, 49, 71, .18);
-    --content: 1180px;
+    --content: 1020px;
     --sans: "Brandon Grotesque", "Brandon Grotesque Full", "Quicksand", "Avenir Next", system-ui, sans-serif;
     --body: "Quicksand", "Avenir Next", system-ui, sans-serif;
     --ease: cubic-bezier(.22, 1, .36, 1);
@@ -202,7 +202,7 @@
     border-left: 1px solid rgba(255,255,255,.08);
     display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 90px 9% 90px 8%;
   }
-  .hello h2 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; margin-bottom: 28px; }
+  .hello h2 { font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; margin-bottom: 22px; }
   .hello p { font-size: 17px; font-weight: 500; line-height: 1.75; margin-bottom: 22px; max-width: 52ch; }
   .hello h3 { margin: 26px 0 20px auto; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; font-weight: 500; color: var(--sky); text-align: right; width: 100%; max-width: 480px; }
   .hello .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 480px; margin-left: auto; }
@@ -211,8 +211,8 @@
   /* ---------- projects ---------- */
   .projects { padding: 110px 0 120px; background: var(--paper); }
   .projects .head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 40px; }
-  .projects h2 { font-size: clamp(34px, 3.6vw, 48px); font-weight: 700; letter-spacing: -.01em; line-height: 1; }
-  .projects h2 .sub { display: block; font-family: var(--body); font-size: .4em; font-weight: 400; font-style: italic; color: var(--ink); margin-top: 12px; letter-spacing: 0; }
+  .projects h2 { font-size: clamp(20px, 2vw, 26px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.15; }
+  .projects h2 .sub { display: block; font-family: var(--body); font-size: 15px; font-weight: 400; font-style: italic; color: var(--ink); margin-top: 10px; letter-spacing: 0; text-transform: none; }
 
   .filters { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { padding: 9px 18px; border: 1px solid var(--rule); border-radius: 999px; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; transition: all .25s var(--ease); }
