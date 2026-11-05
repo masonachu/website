@@ -54,14 +54,14 @@
   /* page / section navigator */
   .nav { position: sticky; top: 76px; display: flex; flex-direction: column; gap: 14px; }
   .pg-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 2px 4px 4px; }
-  .pg-name { display: flex; align-items: center; gap: 6px; border: 0; background: none; text-align: left; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; color: var(--navy); opacity: .6; padding: 4px 6px; border-radius: 6px; min-width: 0; }
+  .pg-name { display: flex; align-items: center; gap: 6px; border: 0; background: none; text-align: left; font-size: 14px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; color: var(--navy); opacity: .85; padding: 4px 6px; border-radius: 6px; min-width: 0; }
   .pg-name:hover { opacity: 1; background: var(--white); }
   .pg-name .caret { font-size: 9px; width: 8px; opacity: .8; }
   .pg.closed { margin-bottom: -4px; }
   .pg-pv { flex: none; border: 0; background: none; width: 26px; height: 26px; border-radius: 6px; color: var(--navy); opacity: .5; font-size: 11px; }
   .pg-pv:hover { opacity: 1; background: var(--white); }
   .pg-pv.on { background: var(--navy); color: var(--white); opacity: 1; }
-  .sec { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 9px; padding: 8px 10px; font-weight: 600; color: var(--navy); }
+  .sec { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 9px; padding: 7px 10px; font-size: 13px; font-weight: 500; color: var(--navy); }
   .sec:hover { background: var(--white); }
   .sec.on { background: var(--navy); color: var(--white); }
   .sec .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sky-deep); flex: none; }
@@ -1003,6 +1003,7 @@
         heading: decode(s.match(/<h2 class="reveal">([^<]*)<\/h2>/)?.[1] ?? ''),
         note: toMd(s.match(/<p class="contact-note">([\s\S]*?)<\/p>/)?.[1] ?? ''),
         email: decode(s.match(/href="mailto:([^"]*)"/)?.[1] ?? ''),
+        emailText: decode(s.match(/contact-email" href="mailto:[^"]*">([^<]*)<\/a>/)?.[1] ?? ''),
         linkedin: s.match(/<a class="social" href="([^"]*)"[^>]*aria-label="LinkedIn"/)?.[1] ?? '',
         instagram: s.match(/<a class="social" href="([^"]*)"[^>]*aria-label="Instagram"/)?.[1] ?? ''
       };
@@ -1011,7 +1012,7 @@
       return replaceSlice(html, sectionSlice(html, '<section class="contact">'), s => s
         .replace(/(<h2 class="reveal">)[^<]*(<\/h2>)/, (m, a, c) => a + escText(d.heading) + c)
         .replace(/(<p class="contact-note">)[\s\S]*?(<\/p>)/, (m, a, c) => a + fromMd(d.note) + c)
-        .replace(/(<a class="btn btn-dark contact-email" href="mailto:)[^"]*(">)[^<]*(<\/a>)/, (m, a, b, c) => a + escUrl(d.email) + b + escText(d.email) + c)
+        .replace(/(<a class="btn btn-dark contact-email" href="mailto:)[^"]*(">)[^<]*(<\/a>)/, (m, a, b, c) => a + escUrl(d.email) + b + escText(d.emailText || d.email) + c)
         .replace(/(<a class="social" href=")[^"]*("[^>]*aria-label="LinkedIn")/, (m, a, c) => a + escUrl(d.linkedin) + c)
         .replace(/(<a class="social" href=")[^"]*("[^>]*aria-label="Instagram")/, (m, a, c) => a + escUrl(d.instagram) + c));
     },
@@ -1023,7 +1024,8 @@
         <div class="card"><div class="fields">
           <div class="field wide"><label>Heading</label><input data-path="heading" data-pv="heading" value="${esc(d.heading)}"></div>
           <div class="field wide"><label>Note</label><textarea data-path="note" data-pv="note" data-md rows="3">${esc(d.note)}</textarea></div>
-          <div class="field wide"><label>Email address</label><input data-path="email" data-pv="email" value="${esc(d.email)}" placeholder="you@example.com" spellcheck="false"></div>
+          <div class="field"><label>Email address (where the button sends)</label><input data-path="email" value="${esc(d.email)}" placeholder="you@example.com" spellcheck="false"></div>
+          <div class="field"><label>Button text</label><input data-path="emailText" data-pv="emailText" value="${esc(d.emailText)}" placeholder="send me an email"></div>
           <div class="field"><label>LinkedIn</label><input data-path="linkedin" value="${esc(d.linkedin)}" placeholder="https://www.linkedin.com/in/…"></div>
           <div class="field"><label>Instagram</label><input data-path="instagram" value="${esc(d.instagram)}" placeholder="https://instagram.com/…"></div>
         </div></div>
@@ -1034,7 +1036,7 @@
     preview(sec) {
       const d = sec.data;
       return el(`<div><h2>Preview</h2><div class="pv-contact"><h2 data-pv="heading">${esc(d.heading)}</h2>
-        <div class="pv-ccard"><p data-pv="note">${fromMd(d.note)}</p><span class="pv-btn" data-pv="email">${esc(d.email)}</span><span class="pv-social">in</span><span class="pv-social">ig</span></div>
+        <div class="pv-ccard"><p data-pv="note">${fromMd(d.note)}</p><span class="pv-btn" data-pv="emailText">${esc(d.emailText || d.email)}</span><span class="pv-social">in</span><span class="pv-social">ig</span></div>
       </div><p class="legend">The email button opens the visitor's mail app.</p></div>`);
     }
   };
@@ -1146,7 +1148,7 @@
     writeup: { label: 'Write-up', what: 'long-form project page: intro, then chapters of text, image rows and videos', prefixes: ['.writeup', '.wu-', '.chapter', '.proj-meta'],
       skeleton: t => `  <section class="writeup">\n    <div class="wrap">\n      <header class="wu-head reveal">\n        <h1>${escText(t)}</h1>\n        <p class="proj-meta"><span class="role">Role</span><span class="tools">Tools</span></p>\n        <p>A short introduction to the project.</p>\n      </header>\n      <article class="chapter reveal">\n        <h2>First chapter</h2>\n        <p>The write-up starts here.</p>\n      </article>\n    </div>\n  </section>` },
     contact: { label: 'Contact', what: 'card with a note, an email button and social links', prefixes: ['.contact', '.btn.btn-dark'],
-      skeleton: () => `  <section class="contact">\n    <div class="wrap">\n      <h2 class="reveal">get in touch</h2>\n      <div class="contact-card reveal">\n        <p class="contact-note">Email is the quickest way to reach me.</p>\n        <a class="btn btn-dark contact-email" href="mailto:masonvictoriasound@gmail.com">masonvictoriasound@gmail.com</a>\n        <div class="contact-social">\n          <a class="social" href="https://www.linkedin.com/in/masonvictoriamusic/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>\n          <a class="social" href="https://instagram.com/masonachu" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>\n        </div>\n      </div>\n    </div>\n  </section>` },
+      skeleton: () => `  <section class="contact">\n    <div class="wrap">\n      <h2 class="reveal">get in touch</h2>\n      <div class="contact-card reveal">\n        <p class="contact-note">Email is the quickest way to reach me.</p>\n        <a class="btn btn-dark contact-email" href="mailto:masonvictoriasound@gmail.com">send me an email</a>\n        <div class="contact-social">\n          <a class="social" href="https://www.linkedin.com/in/masonvictoriamusic/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i></a>\n          <a class="social" href="https://instagram.com/masonachu" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>\n        </div>\n      </div>\n    </div>\n  </section>` },
   };
   const LIB_ORDER = ['reels', 'intro', 'quotes', 'works', 'videos', 'projects', 'writeup', 'contact'];
   const libSecType = k => LIB[k].type || k;
