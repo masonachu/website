@@ -53,7 +53,14 @@
 
   /* page / section navigator */
   .nav { position: sticky; top: 76px; display: flex; flex-direction: column; gap: 14px; }
-  .pg-name { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; opacity: .55; padding: 0 10px 6px; }
+  .pg-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 2px 4px 4px; }
+  .pg-name { display: flex; align-items: center; gap: 6px; border: 0; background: none; text-align: left; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; color: var(--navy); opacity: .6; padding: 4px 6px; border-radius: 6px; min-width: 0; }
+  .pg-name:hover { opacity: 1; background: var(--white); }
+  .pg-name .caret { font-size: 9px; width: 8px; opacity: .8; }
+  .pg.closed { margin-bottom: -4px; }
+  .pg-pv { flex: none; border: 0; background: none; width: 26px; height: 26px; border-radius: 6px; color: var(--navy); opacity: .5; font-size: 11px; }
+  .pg-pv:hover { opacity: 1; background: var(--white); }
+  .pg-pv.on { background: var(--navy); color: var(--white); opacity: 1; }
   .sec { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 9px; padding: 8px 10px; font-weight: 600; color: var(--navy); }
   .sec:hover { background: var(--white); }
   .sec.on { background: var(--navy); color: var(--white); }
@@ -202,8 +209,6 @@
   .pv-wu .yt iframe { display: block; width: 100%; height: 100%; border: 0; }
   .pv-btns { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
   .pv-pill { border: 1px solid var(--sky); color: var(--sky); border-radius: 999px; padding: 6px 16px; font-size: 13px; font-family: var(--sans); }
-  .nav .pv-sec { font-weight: 500; opacity: .6; font-size: 13px; }
-  .nav .pv-sec:hover { opacity: 1; }
 
   /* full-page previewer */
   .pageview { grid-column: 2 / -1; min-width: 0; }
@@ -292,12 +297,12 @@
     </ul>
     <p><strong>Open website folder</strong> is the easy route (Chrome or Edge): pick your <code>website</code> folder once and the tool loads every page, saves them back and copies new photos into <code>images/</code> for you.</p>
     <p><strong>Load pages</strong> works in any browser, including Safari: pick one or more of the <code>.html</code> files. Saving then downloads new copies for you to drop into the folder, and you copy any new photos into <code>images/</code> yourself using the filenames shown.</p>
+    <p><strong>New page</strong> (bottom of the left column) builds a page from the ones already loaded: pick its sections in order and it gets the same header, footer and styling, plus a link in the menu on every page. <strong>+ Add section</strong> under any page does the same for one section.</p>
+    <small>After saving, commit and push as usual.</small>
     <div class="row">
       <button class="btn primary" id="openBtn2">Open website folder</button>
       <label class="btn">Load pages<input type="file" id="fallbackInput2" accept=".html" multiple hidden></label>
     </div>
-    <p><strong>New page</strong> (bottom of the left column) builds a page from the ones already loaded: pick its sections in order and it gets the same header, footer and styling, plus a link in the menu on every page. <strong>+ Add section</strong> under any page does the same for one section.</p>
-    <small>After saving, commit and push as usual.</small>
   </section>
 
   <nav class="nav hidden" id="nav"></nav>
@@ -348,7 +353,9 @@
 
   // ============================================================ state
   // page: { name, html, sections: [{ type, data, dirty }], files: Map(name -> File) }
-  const state = { dir: null, pages: [], cur: { p: -1, s: -1 }, sel: -1, imgCache: new Map() };
+  const state = { dir: null, pages: [], cur: { p: -1, s: -1 }, sel: -1, imgCache: new Map(), collapsed: {} };
+  try { state.collapsed = JSON.parse(localStorage.getItem('editor.collapsed') || '{}'); } catch { }   // which page groups are folded in the left column
+  const saveCollapsed = () => { try { localStorage.setItem('editor.collapsed', JSON.stringify(state.collapsed)); } catch { } };
   const curPage = () => state.pages[state.cur.p];
   const curSec = () => curPage()?.sections[state.cur.s];
   function pageLabel(p) { return PAGE_LABELS[p.name] || decode(p.html.match(/<title>([^<]*)<\/title>/)?.[1] || '').replace(/^Mason Victoria\s*[—–|-]\s*/i, '').replace(/\s*[—–|-]\s*Mason Victoria.*$/i, '') || p.name; }
@@ -1490,10 +1497,17 @@
   function renderNav() {
     const nav = $('#nav'); nav.innerHTML = '';
     state.pages.forEach((p, pi) => {
-      const g = el(`<div><div class="pg-name">${esc(pageLabel(p))}${p.isNew ? ' <span class="badge">new</span>' : ''}</div></div>`);
+      const open = !state.collapsed[p.name];
+      const g = el(`<div class="pg ${open ? '' : 'closed'}"><div class="pg-head">
+        <button class="pg-name" title="${open ? 'Collapse' : 'Expand'}"><span class="caret">${open ? '▾' : '▸'}</span>${esc(pageLabel(p))}${p.isNew ? ' <span class="badge">new</span>' : ''}</button>
+        <button class="pg-pv ${pi === state.cur.p && state.cur.s === 'preview' ? 'on' : ''}" title="Preview this page">▶</button>
+      </div></div>`);
+      g.querySelector('.pg-name').onclick = () => { state.collapsed[p.name] = open; saveCollapsed(); render(); };
+      g.querySelector('.pg-pv').onclick = () => openPagePreview(pi);
+      if (!open) { nav.appendChild(g); return; }
       p.sections.forEach((s, si) => {
         const b = el(`<button class="sec ${pi === state.cur.p && si === state.cur.s ? 'on' : ''}"><span>${secLabel(s)}</span>${s.dirty ? '<span class="dot" title="Unsaved changes"></span>' : ''}</button>`);
-        b.onclick = () => { state.cur = { p: pi, s: si }; state.sel = -1; render(); window.scrollTo({ top: 0 }); };
+        b.onclick = () => { state.cur = { p: pi, s: si }; state.sel = -1; state.collapsed[p.name] = false; render(); window.scrollTo({ top: 0 }); };
         g.appendChild(b);
       });
       if (p.name !== 'index.html') {
@@ -1501,9 +1515,6 @@
         b.onclick = () => { state.cur = { p: pi, s: 'add' }; render(); window.scrollTo({ top: 0 }); };
         g.appendChild(b);
       }
-      const pv = el(`<button class="sec pv-sec ${pi === state.cur.p && state.cur.s === 'preview' ? 'on' : ''}"><span>▶ Preview page</span></button>`);
-      pv.onclick = () => openPagePreview(pi);
-      g.appendChild(pv);
       nav.appendChild(g);
     });
     const np = el(`<button class="btn ghost newpage ${state.cur.s === 'new' ? 'primary' : ''}">+ New page</button>`);
