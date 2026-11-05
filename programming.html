@@ -37,10 +37,16 @@
   .proj-list { display: grid; gap: 22px; }
   .proj { background: var(--paper); border-radius: 14px; padding: 26px 28px 24px; }
   .proj::after { content: ""; display: block; clear: both; }
-  /* media floats beside the write-up so text wraps underneath it; sides alternate */
-  .proj-media { float: right; width: min(50%, 560px); aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: var(--ink); margin: 3px 0 14px 30px; }
+  /* media floats beside the write-up so text wraps underneath it; sides alternate. Images keep their own proportions, videos are 16:9. */
+  .proj-media { float: right; width: min(50%, 560px); border-radius: 10px; overflow: hidden; background: var(--ink); margin: 3px 0 14px 30px; }
   .proj:nth-child(even) .proj-media { float: left; margin: 3px 30px 14px 0; }
-  .proj-media iframe, .proj-media img { display: block; width: 100%; height: 100%; border: 0; object-fit: cover; }
+  .proj-media iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+  .proj-media img { display: block; width: 100%; height: auto; }
+  .proj-media:has(img) { background: var(--white); box-shadow: 0 10px 30px rgba(36,49,71,.12); }
+  .proj-media.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(62%, 700px); background: transparent; box-shadow: none; border-radius: 0; overflow: visible; }
+  .proj-media.pair img { border-radius: 8px; background: var(--white); box-shadow: 0 10px 30px rgba(36,49,71,.12); }
+  .proj-video { clear: both; width: min(100%, 760px); margin: 22px auto 0; border-radius: 10px; overflow: hidden; background: var(--ink); }
+  .proj-video iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
   .proj h3 { font-family: var(--sans); font-size: 26px; font-weight: 700; line-height: 1.1; }
   .proj-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; font-size: 13px; font-weight: 600; }
   .proj-meta span { padding: 4px 11px; border-radius: 999px; line-height: 1.4; }
@@ -59,7 +65,7 @@
     .quotes::before { display: none; }
     .quotes .panel { grid-column: 1; padding: 56px 8% 64px; background: var(--ink); }
     .proj { padding: 18px; }
-    .proj-media, .proj:nth-child(even) .proj-media { float: none; width: 100%; margin: 0 0 16px; }
+    .proj-media, .proj:nth-child(even) .proj-media, .proj-media.pair { float: none; width: 100%; margin: 0 0 16px; }
   }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -162,7 +168,7 @@
   .nav details[open] ul li:nth-child(4) { animation-delay: .15s; }
   /* invisible bridge so the pointer can travel from the label down into the panel without closing it */
   .nav details::after { content: ""; position: absolute; left: -20px; right: -20px; top: 100%; height: 14px; }
-  .nav details ul li { padding: 0; text-transform: none; letter-spacing: 0; font-size: 17px; font-weight: 400; }
+  .nav details ul li { padding: 0; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
   .nav details ul a { padding: 9px 18px; }
   .nav details ul a::after { display: none; }
   .nav details ul a:hover { background: var(--paper); }
